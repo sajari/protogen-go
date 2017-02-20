@@ -30,9 +30,9 @@ package sajari_engine_store_record
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
-import sajari_engine "github.com/sajari/go-genproto/sajari/engine"
-import sajari_engine1 "github.com/sajari/go-genproto/sajari/engine"
-import sajari_rpc "github.com/sajari/go-genproto/sajari/rpc"
+import sajari_engine "github.com/sajari/protogen-go/sajari/engine"
+import sajari_engine1 "github.com/sajari/protogen-go/sajari/engine"
+import sajari_rpc "github.com/sajari/protogen-go/sajari/rpc"
 
 import (
 	context "golang.org/x/net/context"

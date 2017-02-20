@@ -18,7 +18,7 @@ package sajari_api_pipeline_v1
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
-import sajari_api_query_v1 "github.com/sajari/go-genproto/sajari/api/query/v1"
+import sajari_api_query_v1 "github.com/sajari/protogen-go/sajari/api/query/v1"
 
 import (
 	context "golang.org/x/net/context"

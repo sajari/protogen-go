@@ -17,16 +17,16 @@ done
 
 rm -fr sajari/
 
-repo_prefix="github.com/sajari/go-genproto"
+pkgrepo_prefix="github.com/sajari/protogen-go"
 
 pkg_map=""
-pkg_map="$pkg_map,Msajari/rpc/status.proto=$repo_prefix/sajari/rpc"
-pkg_map="$pkg_map,Msajari/rpc/empty.proto=$repo_prefix/sajari/rpc"
-pkg_map="$pkg_map,Msajari/engine/value.proto=$repo_prefix/sajari/engine"
-pkg_map="$pkg_map,Msajari/engine/key.proto=$repo_prefix/sajari/engine"
-pkg_map="$pkg_map,Msajari/engine/query/query.proto=$repo_prefix/sajari/engine/query"
-pkg_map="$pkg_map,Msajari/engine/query/v1/query.proto=$repo_prefix/sajari/engine/query/v1"
-pkg_map="$pkg_map,Msajari/api/query/v1/query.proto=$repo_prefix/sajari/api/query/v1"
+pkg_map="$pkg_map,Msajari/rpc/status.proto=$pkgrepo_prefix/sajari/rpc"
+pkg_map="$pkg_map,Msajari/rpc/empty.proto=$pkgrepo_prefix/sajari/rpc"
+pkg_map="$pkg_map,Msajari/engine/value.proto=$pkgrepo_prefix/sajari/engine"
+pkg_map="$pkg_map,Msajari/engine/key.proto=$pkgrepo_prefix/sajari/engine"
+pkg_map="$pkg_map,Msajari/engine/query/query.proto=$pkgrepo_prefix/sajari/engine/query"
+pkg_map="$pkg_map,Msajari/engine/query/v1/query.proto=$pkgrepo_prefix/sajari/engine/query/v1"
+pkg_map="$pkg_map,Msajari/api/query/v1/query.proto=$pkgrepo_prefix/sajari/api/query/v1"
 
 echo 1>&2 "Building protos:"
 for dir in $(find $PROTO_SRC -name '*.proto' | xargs -n1 dirname | sort | uniq); do
