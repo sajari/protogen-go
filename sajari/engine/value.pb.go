@@ -25,7 +25,7 @@ type Value struct {
 func (m *Value) Reset()                    { *m = Value{} }
 func (m *Value) String() string            { return proto.CompactTextString(m) }
 func (*Value) ProtoMessage()               {}
-func (*Value) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{0} }
+func (*Value) Descriptor() ([]byte, []int) { return fileDescriptor1, []int{0} }
 
 type isValue_Value interface {
 	isValue_Value()
@@ -169,7 +169,7 @@ type Value_Repeated struct {
 func (m *Value_Repeated) Reset()                    { *m = Value_Repeated{} }
 func (m *Value_Repeated) String() string            { return proto.CompactTextString(m) }
 func (*Value_Repeated) ProtoMessage()               {}
-func (*Value_Repeated) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{0, 0} }
+func (*Value_Repeated) Descriptor() ([]byte, []int) { return fileDescriptor1, []int{0, 0} }
 
 func (m *Value_Repeated) GetValues() []string {
 	if m != nil {
@@ -183,9 +183,9 @@ func init() {
 	proto.RegisterType((*Value_Repeated)(nil), "sajari.engine.Value.Repeated")
 }
 
-func init() { proto.RegisterFile("sajari/engine/value.proto", fileDescriptor3) }
+func init() { proto.RegisterFile("sajari/engine/value.proto", fileDescriptor1) }
 
-var fileDescriptor3 = []byte{
+var fileDescriptor1 = []byte{
 	// 174 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xe2, 0x92, 0x2c, 0x4e, 0xcc, 0x4a,
 	0x2c, 0xca, 0xd4, 0x4f, 0xcd, 0x4b, 0xcf, 0xcc, 0x4b, 0xd5, 0x2f, 0x4b, 0xcc, 0x29, 0x4d, 0xd5,

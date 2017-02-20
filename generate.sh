@@ -20,9 +20,9 @@ rm -fr sajari/
 repo_prefix="github.com/sajari/go-genproto"
 
 pkg_map=""
+pkg_map="$pkg_map,Msajari/rpc/status.proto=$repo_prefix/sajari/rpc"
+pkg_map="$pkg_map,Msajari/rpc/empty.proto=$repo_prefix/sajari/rpc"
 pkg_map="$pkg_map,Msajari/engine/value.proto=$repo_prefix/sajari/engine"
-pkg_map="$pkg_map,Msajari/engine/status.proto=$repo_prefix/sajari/engine"
-pkg_map="$pkg_map,Msajari/engine/empty.proto=$repo_prefix/sajari/engine"
 pkg_map="$pkg_map,Msajari/engine/key.proto=$repo_prefix/sajari/engine"
 pkg_map="$pkg_map,Msajari/engine/query/query.proto=$repo_prefix/sajari/engine/query"
 pkg_map="$pkg_map,Msajari/engine/query/v1/query.proto=$repo_prefix/sajari/engine/query/v1"

@@ -2,6 +2,17 @@
 // source: sajari/engine/key.proto
 // DO NOT EDIT!
 
+/*
+Package sajari_engine is a generated protocol buffer package.
+
+It is generated from these files:
+	sajari/engine/key.proto
+	sajari/engine/value.proto
+
+It has these top-level messages:
+	Key
+	Value
+*/
 package sajari_engine
 
 import proto "github.com/golang/protobuf/proto"
@@ -12,6 +23,12 @@ import math "math"
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+// A compilation error at this line likely means your copy of the
+// proto package needs to be updated.
+const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 // Key is a key-value pair that uniquely determines a document in a collection.
 // Any unique field in a collection can be used to create a key.
@@ -25,7 +42,7 @@ type Key struct {
 func (m *Key) Reset()                    { *m = Key{} }
 func (m *Key) String() string            { return proto.CompactTextString(m) }
 func (*Key) ProtoMessage()               {}
-func (*Key) Descriptor() ([]byte, []int) { return fileDescriptor1, []int{0} }
+func (*Key) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
 func (m *Key) GetField() string {
 	if m != nil {
@@ -45,9 +62,9 @@ func init() {
 	proto.RegisterType((*Key)(nil), "sajari.engine.Key")
 }
 
-func init() { proto.RegisterFile("sajari/engine/key.proto", fileDescriptor1) }
+func init() { proto.RegisterFile("sajari/engine/key.proto", fileDescriptor0) }
 
-var fileDescriptor1 = []byte{
+var fileDescriptor0 = []byte{
 	// 121 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xe2, 0x12, 0x2f, 0x4e, 0xcc, 0x4a,
 	0x2c, 0xca, 0xd4, 0x4f, 0xcd, 0x4b, 0xcf, 0xcc, 0x4b, 0xd5, 0xcf, 0x4e, 0xad, 0xd4, 0x2b, 0x28,
