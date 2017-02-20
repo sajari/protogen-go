@@ -16,9 +16,9 @@ It has these top-level messages:
 	AddResponse
 	GetResponse
 	DeleteResponse
-	PatchResponse
 	Keys
-	KeysValues
+	MutateRequest
+	MutateResponse
 	SetRequest
 	SetResponse
 	IncrementRequest
@@ -201,22 +201,6 @@ func (m *DeleteResponse) GetStatus() []*sajari_rpc.Status {
 	return nil
 }
 
-type PatchResponse struct {
-	Status []*sajari_rpc.Status `protobuf:"bytes,1,rep,name=status" json:"status,omitempty"`
-}
-
-func (m *PatchResponse) Reset()                    { *m = PatchResponse{} }
-func (m *PatchResponse) String() string            { return proto.CompactTextString(m) }
-func (*PatchResponse) ProtoMessage()               {}
-func (*PatchResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{7} }
-
-func (m *PatchResponse) GetStatus() []*sajari_rpc.Status {
-	if m != nil {
-		return m.Status
-	}
-	return nil
-}
-
 // Keys is a list of keys.
 type Keys struct {
 	Keys []*sajari_engine1.Key `protobuf:"bytes,1,rep,name=keys" json:"keys,omitempty"`
@@ -225,7 +209,7 @@ type Keys struct {
 func (m *Keys) Reset()                    { *m = Keys{} }
 func (m *Keys) String() string            { return proto.CompactTextString(m) }
 func (*Keys) ProtoMessage()               {}
-func (*Keys) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{8} }
+func (*Keys) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{7} }
 
 func (m *Keys) GetKeys() []*sajari_engine1.Key {
 	if m != nil {
@@ -234,197 +218,211 @@ func (m *Keys) GetKeys() []*sajari_engine1.Key {
 	return nil
 }
 
-type KeysValues struct {
-	KeysValues []*KeysValues_KeyValues `protobuf:"bytes,1,rep,name=keys_values,json=keysValues" json:"keys_values,omitempty"`
+type MutateRequest struct {
+	// List of record murations to apply.
+	RecordMutations []*MutateRequest_RecordMutation `protobuf:"bytes,1,rep,name=record_mutations,json=recordMutations" json:"record_mutations,omitempty"`
 }
 
-func (m *KeysValues) Reset()                    { *m = KeysValues{} }
-func (m *KeysValues) String() string            { return proto.CompactTextString(m) }
-func (*KeysValues) ProtoMessage()               {}
-func (*KeysValues) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{9} }
+func (m *MutateRequest) Reset()                    { *m = MutateRequest{} }
+func (m *MutateRequest) String() string            { return proto.CompactTextString(m) }
+func (*MutateRequest) ProtoMessage()               {}
+func (*MutateRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{8} }
 
-func (m *KeysValues) GetKeysValues() []*KeysValues_KeyValues {
+func (m *MutateRequest) GetRecordMutations() []*MutateRequest_RecordMutation {
 	if m != nil {
-		return m.KeysValues
+		return m.RecordMutations
 	}
 	return nil
 }
 
-type KeysValues_KeyValues struct {
-	// The key used to identify the record to be patched.
+type MutateRequest_RecordMutation struct {
+	// Key which uniquely identifies record.
 	Key *sajari_engine1.Key `protobuf:"bytes,1,opt,name=key" json:"key,omitempty"`
-	// Map of key-value pairs to patch data in the collection record.  The
-	// value should be a JSON-encoded representation of an engine-recognised
-	// type.  Null is used to clear a value in the collection.
-	Values map[string]*KeysValues_KeyValues_Value `protobuf:"bytes,2,rep,name=values" json:"values,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// List of fields to mutate.
+	FieldMutations []*MutateRequest_RecordMutation_FieldMutation `protobuf:"bytes,2,rep,name=field_mutations,json=fieldMutations" json:"field_mutations,omitempty"`
 }
 
-func (m *KeysValues_KeyValues) Reset()                    { *m = KeysValues_KeyValues{} }
-func (m *KeysValues_KeyValues) String() string            { return proto.CompactTextString(m) }
-func (*KeysValues_KeyValues) ProtoMessage()               {}
-func (*KeysValues_KeyValues) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{9, 0} }
+func (m *MutateRequest_RecordMutation) Reset()                    { *m = MutateRequest_RecordMutation{} }
+func (m *MutateRequest_RecordMutation) String() string            { return proto.CompactTextString(m) }
+func (*MutateRequest_RecordMutation) ProtoMessage()               {}
+func (*MutateRequest_RecordMutation) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{8, 0} }
 
-func (m *KeysValues_KeyValues) GetKey() *sajari_engine1.Key {
+func (m *MutateRequest_RecordMutation) GetKey() *sajari_engine1.Key {
 	if m != nil {
 		return m.Key
 	}
 	return nil
 }
 
-func (m *KeysValues_KeyValues) GetValues() map[string]*KeysValues_KeyValues_Value {
+func (m *MutateRequest_RecordMutation) GetFieldMutations() []*MutateRequest_RecordMutation_FieldMutation {
 	if m != nil {
-		return m.Values
+		return m.FieldMutations
 	}
 	return nil
 }
 
-// Value is a patching value, which can exhibit a number of different
-// behaviours.
-type KeysValues_KeyValues_Value struct {
-	// Types that are valid to be assigned to Value:
-	//	*KeysValues_KeyValues_Value_Set
-	//	*KeysValues_KeyValues_Value_Increment
-	//	*KeysValues_KeyValues_Value_Append
-	Value isKeysValues_KeyValues_Value_Value `protobuf_oneof:"value"`
+// MutateField defines a mutation of a field.
+type MutateRequest_RecordMutation_FieldMutation struct {
+	// Field is the name of the field to mutate.
+	Field string `protobuf:"bytes,1,opt,name=field" json:"field,omitempty"`
+	// Types that are valid to be assigned to Mutation:
+	//	*MutateRequest_RecordMutation_FieldMutation_Set
+	//	*MutateRequest_RecordMutation_FieldMutation_Increment
+	//	*MutateRequest_RecordMutation_FieldMutation_Append
+	Mutation isMutateRequest_RecordMutation_FieldMutation_Mutation `protobuf_oneof:"mutation"`
 }
 
-func (m *KeysValues_KeyValues_Value) Reset()         { *m = KeysValues_KeyValues_Value{} }
-func (m *KeysValues_KeyValues_Value) String() string { return proto.CompactTextString(m) }
-func (*KeysValues_KeyValues_Value) ProtoMessage()    {}
-func (*KeysValues_KeyValues_Value) Descriptor() ([]byte, []int) {
-	return fileDescriptor0, []int{9, 0, 0}
+func (m *MutateRequest_RecordMutation_FieldMutation) Reset() {
+	*m = MutateRequest_RecordMutation_FieldMutation{}
+}
+func (m *MutateRequest_RecordMutation_FieldMutation) String() string {
+	return proto.CompactTextString(m)
+}
+func (*MutateRequest_RecordMutation_FieldMutation) ProtoMessage() {}
+func (*MutateRequest_RecordMutation_FieldMutation) Descriptor() ([]byte, []int) {
+	return fileDescriptor0, []int{8, 0, 0}
 }
 
-type isKeysValues_KeyValues_Value_Value interface {
-	isKeysValues_KeyValues_Value_Value()
+type isMutateRequest_RecordMutation_FieldMutation_Mutation interface {
+	isMutateRequest_RecordMutation_FieldMutation_Mutation()
 }
 
-type KeysValues_KeyValues_Value_Set struct {
-	Set *sajari_engine.Value `protobuf:"bytes,1,opt,name=set,oneof"`
+type MutateRequest_RecordMutation_FieldMutation_Set struct {
+	Set *sajari_engine.Value `protobuf:"bytes,2,opt,name=set,oneof"`
 }
-type KeysValues_KeyValues_Value_Increment struct {
-	Increment *sajari_engine.Value `protobuf:"bytes,2,opt,name=increment,oneof"`
+type MutateRequest_RecordMutation_FieldMutation_Increment struct {
+	Increment *sajari_engine.Value `protobuf:"bytes,3,opt,name=increment,oneof"`
 }
-type KeysValues_KeyValues_Value_Append struct {
-	Append *sajari_engine.Value `protobuf:"bytes,3,opt,name=append,oneof"`
+type MutateRequest_RecordMutation_FieldMutation_Append struct {
+	Append *sajari_engine.Value `protobuf:"bytes,4,opt,name=append,oneof"`
 }
 
-func (*KeysValues_KeyValues_Value_Set) isKeysValues_KeyValues_Value_Value()       {}
-func (*KeysValues_KeyValues_Value_Increment) isKeysValues_KeyValues_Value_Value() {}
-func (*KeysValues_KeyValues_Value_Append) isKeysValues_KeyValues_Value_Value()    {}
+func (*MutateRequest_RecordMutation_FieldMutation_Set) isMutateRequest_RecordMutation_FieldMutation_Mutation() {
+}
+func (*MutateRequest_RecordMutation_FieldMutation_Increment) isMutateRequest_RecordMutation_FieldMutation_Mutation() {
+}
+func (*MutateRequest_RecordMutation_FieldMutation_Append) isMutateRequest_RecordMutation_FieldMutation_Mutation() {
+}
 
-func (m *KeysValues_KeyValues_Value) GetValue() isKeysValues_KeyValues_Value_Value {
+func (m *MutateRequest_RecordMutation_FieldMutation) GetMutation() isMutateRequest_RecordMutation_FieldMutation_Mutation {
 	if m != nil {
-		return m.Value
+		return m.Mutation
 	}
 	return nil
 }
 
-func (m *KeysValues_KeyValues_Value) GetSet() *sajari_engine.Value {
-	if x, ok := m.GetValue().(*KeysValues_KeyValues_Value_Set); ok {
+func (m *MutateRequest_RecordMutation_FieldMutation) GetField() string {
+	if m != nil {
+		return m.Field
+	}
+	return ""
+}
+
+func (m *MutateRequest_RecordMutation_FieldMutation) GetSet() *sajari_engine.Value {
+	if x, ok := m.GetMutation().(*MutateRequest_RecordMutation_FieldMutation_Set); ok {
 		return x.Set
 	}
 	return nil
 }
 
-func (m *KeysValues_KeyValues_Value) GetIncrement() *sajari_engine.Value {
-	if x, ok := m.GetValue().(*KeysValues_KeyValues_Value_Increment); ok {
+func (m *MutateRequest_RecordMutation_FieldMutation) GetIncrement() *sajari_engine.Value {
+	if x, ok := m.GetMutation().(*MutateRequest_RecordMutation_FieldMutation_Increment); ok {
 		return x.Increment
 	}
 	return nil
 }
 
-func (m *KeysValues_KeyValues_Value) GetAppend() *sajari_engine.Value {
-	if x, ok := m.GetValue().(*KeysValues_KeyValues_Value_Append); ok {
+func (m *MutateRequest_RecordMutation_FieldMutation) GetAppend() *sajari_engine.Value {
+	if x, ok := m.GetMutation().(*MutateRequest_RecordMutation_FieldMutation_Append); ok {
 		return x.Append
 	}
 	return nil
 }
 
 // XXX_OneofFuncs is for the internal use of the proto package.
-func (*KeysValues_KeyValues_Value) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
-	return _KeysValues_KeyValues_Value_OneofMarshaler, _KeysValues_KeyValues_Value_OneofUnmarshaler, _KeysValues_KeyValues_Value_OneofSizer, []interface{}{
-		(*KeysValues_KeyValues_Value_Set)(nil),
-		(*KeysValues_KeyValues_Value_Increment)(nil),
-		(*KeysValues_KeyValues_Value_Append)(nil),
+func (*MutateRequest_RecordMutation_FieldMutation) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
+	return _MutateRequest_RecordMutation_FieldMutation_OneofMarshaler, _MutateRequest_RecordMutation_FieldMutation_OneofUnmarshaler, _MutateRequest_RecordMutation_FieldMutation_OneofSizer, []interface{}{
+		(*MutateRequest_RecordMutation_FieldMutation_Set)(nil),
+		(*MutateRequest_RecordMutation_FieldMutation_Increment)(nil),
+		(*MutateRequest_RecordMutation_FieldMutation_Append)(nil),
 	}
 }
 
-func _KeysValues_KeyValues_Value_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
-	m := msg.(*KeysValues_KeyValues_Value)
-	// value
-	switch x := m.Value.(type) {
-	case *KeysValues_KeyValues_Value_Set:
-		b.EncodeVarint(1<<3 | proto.WireBytes)
+func _MutateRequest_RecordMutation_FieldMutation_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
+	m := msg.(*MutateRequest_RecordMutation_FieldMutation)
+	// mutation
+	switch x := m.Mutation.(type) {
+	case *MutateRequest_RecordMutation_FieldMutation_Set:
+		b.EncodeVarint(2<<3 | proto.WireBytes)
 		if err := b.EncodeMessage(x.Set); err != nil {
 			return err
 		}
-	case *KeysValues_KeyValues_Value_Increment:
-		b.EncodeVarint(2<<3 | proto.WireBytes)
+	case *MutateRequest_RecordMutation_FieldMutation_Increment:
+		b.EncodeVarint(3<<3 | proto.WireBytes)
 		if err := b.EncodeMessage(x.Increment); err != nil {
 			return err
 		}
-	case *KeysValues_KeyValues_Value_Append:
-		b.EncodeVarint(3<<3 | proto.WireBytes)
+	case *MutateRequest_RecordMutation_FieldMutation_Append:
+		b.EncodeVarint(4<<3 | proto.WireBytes)
 		if err := b.EncodeMessage(x.Append); err != nil {
 			return err
 		}
 	case nil:
 	default:
-		return fmt.Errorf("KeysValues_KeyValues_Value.Value has unexpected type %T", x)
+		return fmt.Errorf("MutateRequest_RecordMutation_FieldMutation.Mutation has unexpected type %T", x)
 	}
 	return nil
 }
 
-func _KeysValues_KeyValues_Value_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
-	m := msg.(*KeysValues_KeyValues_Value)
+func _MutateRequest_RecordMutation_FieldMutation_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
+	m := msg.(*MutateRequest_RecordMutation_FieldMutation)
 	switch tag {
-	case 1: // value.set
+	case 2: // mutation.set
 		if wire != proto.WireBytes {
 			return true, proto.ErrInternalBadWireType
 		}
 		msg := new(sajari_engine.Value)
 		err := b.DecodeMessage(msg)
-		m.Value = &KeysValues_KeyValues_Value_Set{msg}
+		m.Mutation = &MutateRequest_RecordMutation_FieldMutation_Set{msg}
 		return true, err
-	case 2: // value.increment
+	case 3: // mutation.increment
 		if wire != proto.WireBytes {
 			return true, proto.ErrInternalBadWireType
 		}
 		msg := new(sajari_engine.Value)
 		err := b.DecodeMessage(msg)
-		m.Value = &KeysValues_KeyValues_Value_Increment{msg}
+		m.Mutation = &MutateRequest_RecordMutation_FieldMutation_Increment{msg}
 		return true, err
-	case 3: // value.append
+	case 4: // mutation.append
 		if wire != proto.WireBytes {
 			return true, proto.ErrInternalBadWireType
 		}
 		msg := new(sajari_engine.Value)
 		err := b.DecodeMessage(msg)
-		m.Value = &KeysValues_KeyValues_Value_Append{msg}
+		m.Mutation = &MutateRequest_RecordMutation_FieldMutation_Append{msg}
 		return true, err
 	default:
 		return false, nil
 	}
 }
 
-func _KeysValues_KeyValues_Value_OneofSizer(msg proto.Message) (n int) {
-	m := msg.(*KeysValues_KeyValues_Value)
-	// value
-	switch x := m.Value.(type) {
-	case *KeysValues_KeyValues_Value_Set:
+func _MutateRequest_RecordMutation_FieldMutation_OneofSizer(msg proto.Message) (n int) {
+	m := msg.(*MutateRequest_RecordMutation_FieldMutation)
+	// mutation
+	switch x := m.Mutation.(type) {
+	case *MutateRequest_RecordMutation_FieldMutation_Set:
 		s := proto.Size(x.Set)
-		n += proto.SizeVarint(1<<3 | proto.WireBytes)
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *KeysValues_KeyValues_Value_Increment:
-		s := proto.Size(x.Increment)
 		n += proto.SizeVarint(2<<3 | proto.WireBytes)
 		n += proto.SizeVarint(uint64(s))
 		n += s
-	case *KeysValues_KeyValues_Value_Append:
-		s := proto.Size(x.Append)
+	case *MutateRequest_RecordMutation_FieldMutation_Increment:
+		s := proto.Size(x.Increment)
 		n += proto.SizeVarint(3<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *MutateRequest_RecordMutation_FieldMutation_Append:
+		s := proto.Size(x.Append)
+		n += proto.SizeVarint(4<<3 | proto.WireBytes)
 		n += proto.SizeVarint(uint64(s))
 		n += s
 	case nil:
@@ -432,6 +430,22 @@ func _KeysValues_KeyValues_Value_OneofSizer(msg proto.Message) (n int) {
 		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
 	}
 	return n
+}
+
+type MutateResponse struct {
+	Status []*sajari_rpc.Status `protobuf:"bytes,1,rep,name=status" json:"status,omitempty"`
+}
+
+func (m *MutateResponse) Reset()                    { *m = MutateResponse{} }
+func (m *MutateResponse) String() string            { return proto.CompactTextString(m) }
+func (*MutateResponse) ProtoMessage()               {}
+func (*MutateResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{9} }
+
+func (m *MutateResponse) GetStatus() []*sajari_rpc.Status {
+	if m != nil {
+		return m.Status
+	}
+	return nil
 }
 
 type SetRequest struct {
@@ -569,11 +583,11 @@ func init() {
 	proto.RegisterType((*AddResponse)(nil), "sajari.engine.store.record.AddResponse")
 	proto.RegisterType((*GetResponse)(nil), "sajari.engine.store.record.GetResponse")
 	proto.RegisterType((*DeleteResponse)(nil), "sajari.engine.store.record.DeleteResponse")
-	proto.RegisterType((*PatchResponse)(nil), "sajari.engine.store.record.PatchResponse")
 	proto.RegisterType((*Keys)(nil), "sajari.engine.store.record.Keys")
-	proto.RegisterType((*KeysValues)(nil), "sajari.engine.store.record.KeysValues")
-	proto.RegisterType((*KeysValues_KeyValues)(nil), "sajari.engine.store.record.KeysValues.KeyValues")
-	proto.RegisterType((*KeysValues_KeyValues_Value)(nil), "sajari.engine.store.record.KeysValues.KeyValues.Value")
+	proto.RegisterType((*MutateRequest)(nil), "sajari.engine.store.record.MutateRequest")
+	proto.RegisterType((*MutateRequest_RecordMutation)(nil), "sajari.engine.store.record.MutateRequest.RecordMutation")
+	proto.RegisterType((*MutateRequest_RecordMutation_FieldMutation)(nil), "sajari.engine.store.record.MutateRequest.RecordMutation.FieldMutation")
+	proto.RegisterType((*MutateResponse)(nil), "sajari.engine.store.record.MutateResponse")
 	proto.RegisterType((*SetRequest)(nil), "sajari.engine.store.record.SetRequest")
 	proto.RegisterType((*SetResponse)(nil), "sajari.engine.store.record.SetResponse")
 	proto.RegisterType((*IncrementRequest)(nil), "sajari.engine.store.record.IncrementRequest")
@@ -601,9 +615,9 @@ type StoreClient interface {
 	Get(ctx context.Context, in *Keys, opts ...grpc.CallOption) (*GetResponse, error)
 	// Delete removes the records corresponding to the listed keys.
 	Delete(ctx context.Context, in *Keys, opts ...grpc.CallOption) (*DeleteResponse, error)
-	// Patch applies key-value updates to records corresponding to
+	// Mutate applies key-value updates to records corresponding to
 	// keys.
-	Patch(ctx context.Context, in *KeysValues, opts ...grpc.CallOption) (*PatchResponse, error)
+	Mutate(ctx context.Context, in *MutateRequest, opts ...grpc.CallOption) (*MutateResponse, error)
 	// Exists
 	Exists(ctx context.Context, in *Keys, opts ...grpc.CallOption) (*ExistsResponse, error)
 }
@@ -643,9 +657,9 @@ func (c *storeClient) Delete(ctx context.Context, in *Keys, opts ...grpc.CallOpt
 	return out, nil
 }
 
-func (c *storeClient) Patch(ctx context.Context, in *KeysValues, opts ...grpc.CallOption) (*PatchResponse, error) {
-	out := new(PatchResponse)
-	err := grpc.Invoke(ctx, "/sajari.engine.store.record.Store/Patch", in, out, c.cc, opts...)
+func (c *storeClient) Mutate(ctx context.Context, in *MutateRequest, opts ...grpc.CallOption) (*MutateResponse, error) {
+	out := new(MutateResponse)
+	err := grpc.Invoke(ctx, "/sajari.engine.store.record.Store/Mutate", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -672,9 +686,9 @@ type StoreServer interface {
 	Get(context.Context, *Keys) (*GetResponse, error)
 	// Delete removes the records corresponding to the listed keys.
 	Delete(context.Context, *Keys) (*DeleteResponse, error)
-	// Patch applies key-value updates to records corresponding to
+	// Mutate applies key-value updates to records corresponding to
 	// keys.
-	Patch(context.Context, *KeysValues) (*PatchResponse, error)
+	Mutate(context.Context, *MutateRequest) (*MutateResponse, error)
 	// Exists
 	Exists(context.Context, *Keys) (*ExistsResponse, error)
 }
@@ -737,20 +751,20 @@ func _Store_Delete_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Store_Patch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(KeysValues)
+func _Store_Mutate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MutateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(StoreServer).Patch(ctx, in)
+		return srv.(StoreServer).Mutate(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sajari.engine.store.record.Store/Patch",
+		FullMethod: "/sajari.engine.store.record.Store/Mutate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StoreServer).Patch(ctx, req.(*KeysValues))
+		return srv.(StoreServer).Mutate(ctx, req.(*MutateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -790,8 +804,8 @@ var _Store_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Store_Delete_Handler,
 		},
 		{
-			MethodName: "Patch",
-			Handler:    _Store_Patch_Handler,
+			MethodName: "Mutate",
+			Handler:    _Store_Mutate_Handler,
 		},
 		{
 			MethodName: "Exists",
@@ -906,51 +920,52 @@ var _Score_serviceDesc = grpc.ServiceDesc{
 func init() { proto.RegisterFile("sajari/engine/store/record/record.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 731 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xac, 0x56, 0xdd, 0x6e, 0xd3, 0x30,
-	0x14, 0x5e, 0x9a, 0x25, 0x53, 0x4f, 0xc4, 0x34, 0xac, 0x49, 0x94, 0x5c, 0xa0, 0x2a, 0xb0, 0xad,
-	0x6c, 0x90, 0xa2, 0x82, 0x10, 0x3f, 0x95, 0xd0, 0x80, 0xfd, 0x69, 0x48, 0x0c, 0x67, 0xea, 0xc5,
-	0x6e, 0x50, 0x48, 0x3c, 0x16, 0xba, 0x25, 0x9d, 0xed, 0x02, 0x7d, 0x09, 0xde, 0x00, 0x09, 0x5e,
-	0x83, 0x3b, 0x2e, 0x79, 0x2a, 0x50, 0x6c, 0x37, 0x4d, 0xcb, 0x48, 0x7f, 0xc6, 0x55, 0x1c, 0xfb,
-	0x3b, 0xe7, 0x7c, 0x39, 0xfe, 0xbe, 0xa3, 0xc0, 0x1a, 0xf3, 0x3f, 0xf8, 0x34, 0xaa, 0x93, 0xf8,
-	0x7d, 0x14, 0x93, 0x3a, 0xe3, 0x09, 0x25, 0x75, 0x4a, 0x82, 0x84, 0x86, 0xea, 0xe1, 0x76, 0x68,
-	0xc2, 0x13, 0x64, 0x4b, 0xa0, 0x2b, 0x81, 0xae, 0x00, 0xba, 0x12, 0x61, 0x5f, 0x1f, 0x4e, 0xf2,
-	0xd1, 0x3f, 0xed, 0x12, 0x19, 0x66, 0x5f, 0x1b, 0x3e, 0x6a, 0x93, 0xde, 0xc8, 0x01, 0xed, 0x04,
-	0x75, 0xc6, 0x7d, 0xde, 0x65, 0xf2, 0xc0, 0x69, 0xc2, 0xe2, 0xd6, 0xe7, 0x88, 0x71, 0x86, 0x09,
-	0xeb, 0x24, 0x31, 0x23, 0x68, 0x1d, 0x4c, 0x89, 0xa8, 0x68, 0x55, 0xbd, 0x66, 0x35, 0x90, 0xab,
-	0xb8, 0xd0, 0x4e, 0xe0, 0x7a, 0xe2, 0x04, 0x2b, 0x84, 0xb3, 0x01, 0xe5, 0x43, 0xea, 0xc7, 0xec,
-	0x38, 0xa1, 0x67, 0xe8, 0x06, 0x40, 0x14, 0x92, 0x98, 0x47, 0xc7, 0x11, 0xa1, 0x15, 0xad, 0xaa,
-	0xd5, 0xca, 0x38, 0xb7, 0xe3, 0x7c, 0xd7, 0xc0, 0xc4, 0xe2, 0x13, 0xd0, 0x36, 0x98, 0x82, 0x76,
-	0xbf, 0x86, 0xeb, 0xfe, 0xfb, 0x7b, 0x5d, 0x19, 0xe3, 0xb6, 0x44, 0xc0, 0x56, 0xcc, 0x69, 0x0f,
-	0xab, 0x68, 0xfb, 0x35, 0x58, 0xb9, 0x6d, 0xb4, 0x04, 0x7a, 0x9b, 0xf4, 0x54, 0xe9, 0x74, 0x89,
-	0xd6, 0xc1, 0x10, 0xd0, 0x4a, 0xa9, 0xaa, 0xd5, 0xac, 0xc6, 0xf2, 0x48, 0x1d, 0x11, 0x8c, 0x25,
-	0xe4, 0x49, 0xe9, 0x91, 0xe6, 0x7c, 0xd1, 0x60, 0x41, 0xd6, 0x63, 0xa8, 0x09, 0x0b, 0x92, 0x41,
-	0x9f, 0xa5, 0x33, 0x9e, 0x25, 0xee, 0x87, 0xa0, 0x2d, 0x00, 0xde, 0x6f, 0x0d, 0xab, 0x94, 0x44,
-	0x82, 0x95, 0xa2, 0x04, 0x59, 0x23, 0x71, 0x2e, 0xd0, 0xf1, 0xc1, 0xda, 0x0c, 0xc3, 0xec, 0x72,
-	0x56, 0x61, 0xbe, 0x4d, 0x7a, 0x7f, 0x5d, 0x8d, 0xca, 0xb7, 0x4f, 0x7a, 0x58, 0x9c, 0xe7, 0x2e,
-	0xb1, 0x34, 0xf6, 0x12, 0x3f, 0x81, 0xb5, 0x43, 0x78, 0x56, 0xe2, 0x72, 0x9f, 0x3d, 0x4d, 0xe1,
-	0x26, 0x2c, 0xbe, 0x24, 0xa7, 0x84, 0x93, 0x99, 0xb4, 0xf7, 0x14, 0xae, 0x1c, 0xf8, 0x3c, 0x38,
-	0x99, 0x29, 0xd8, 0x85, 0xf9, 0xfd, 0xb4, 0x4f, 0x13, 0xf6, 0xd3, 0xf9, 0xad, 0x03, 0xa4, 0x01,
-	0x52, 0x6d, 0xe8, 0x0d, 0x58, 0xe9, 0xf6, 0xdb, 0x21, 0x11, 0xdf, 0x2b, 0xea, 0xd3, 0x20, 0x38,
-	0x5d, 0xca, 0x15, 0x86, 0x76, 0xb6, 0x6b, 0x7f, 0xd5, 0xa1, 0x9c, 0x9d, 0xa0, 0x5b, 0x03, 0x25,
-	0x5f, 0x4c, 0x4b, 0xa8, 0xfb, 0x30, 0xb3, 0x91, 0x6c, 0x76, 0x73, 0x5a, 0x06, 0x17, 0x9a, 0xea,
-	0x9b, 0x06, 0x86, 0xd8, 0x47, 0x35, 0xd0, 0x19, 0xe1, 0x8a, 0xc5, 0x85, 0xde, 0xd9, 0x9d, 0xc3,
-	0x29, 0x04, 0x3d, 0x80, 0x72, 0x14, 0x07, 0x94, 0x9c, 0x91, 0x98, 0x17, 0x79, 0x6d, 0x77, 0x0e,
-	0x0f, 0x80, 0xc8, 0x05, 0xd3, 0xef, 0x74, 0x48, 0x1c, 0x56, 0xf4, 0xc2, 0x10, 0x85, 0x7a, 0xbe,
-	0xa0, 0xdc, 0x6c, 0x9f, 0x8f, 0xf3, 0xfd, 0xab, 0x61, 0xdf, 0x3f, 0x9c, 0xad, 0x31, 0xf9, 0xc9,
-	0x70, 0x08, 0xe0, 0xa5, 0x2e, 0x39, 0xef, 0x12, 0xc6, 0xd1, 0xb6, 0x12, 0x00, 0x0b, 0x12, 0x9a,
-	0x09, 0x60, 0x65, 0x4c, 0x15, 0x4f, 0x80, 0xe5, 0xad, 0xcb, 0xb5, 0xf3, 0x18, 0x2c, 0x2f, 0xe7,
-	0xbd, 0x69, 0x24, 0x7c, 0x04, 0x4b, 0x7b, 0xfd, 0x4e, 0xfe, 0x6f, 0x5a, 0xcf, 0xe0, 0x6a, 0x2e,
-	0xf7, 0x0c, 0xe4, 0x7e, 0x6a, 0x42, 0xcd, 0x32, 0xdd, 0x84, 0x6a, 0x7e, 0x01, 0xa6, 0xe2, 0x2d,
-	0xd5, 0xbc, 0x31, 0x11, 0x6f, 0x57, 0x3c, 0xb0, 0x0a, 0xb5, 0xf7, 0xc0, 0x10, 0x1b, 0x68, 0x19,
-	0x0c, 0x4e, 0xd2, 0xd1, 0x9b, 0x92, 0x2d, 0x63, 0xf9, 0x92, 0xee, 0x06, 0x49, 0x57, 0x69, 0xd4,
-	0xc0, 0xf2, 0x25, 0xdd, 0x15, 0xe1, 0x42, 0x86, 0x25, 0x2c, 0x5f, 0x1a, 0x3f, 0x74, 0x30, 0xbc,
-	0xb4, 0x26, 0xf2, 0x40, 0xdf, 0x0c, 0x43, 0x74, 0x73, 0xfc, 0x20, 0x64, 0xf6, 0x5a, 0x11, 0x28,
-	0x3f, 0xca, 0x0f, 0x40, 0xdf, 0x21, 0x1c, 0x55, 0xc7, 0x49, 0xb3, 0x38, 0x63, 0x7e, 0x72, 0xb7,
-	0xc0, 0x94, 0xf3, 0x74, 0x82, 0xa4, 0xeb, 0x45, 0x88, 0x91, 0xa9, 0x7c, 0x04, 0x86, 0x98, 0xb4,
-	0x68, 0x75, 0x32, 0x1b, 0xd9, 0xb7, 0x8b, 0x70, 0xc3, 0x43, 0xbb, 0x05, 0xa6, 0xfc, 0xff, 0xb8,
-	0x2c, 0xe7, 0xe1, 0xbf, 0x98, 0xc6, 0x2f, 0xad, 0x2f, 0x84, 0x16, 0xe8, 0x1e, 0xe1, 0xc5, 0xdc,
-	0x07, 0xce, 0x2e, 0xee, 0x76, 0xde, 0xab, 0x27, 0x50, 0xce, 0x3c, 0x82, 0xee, 0x14, 0x45, 0x8d,
-	0xda, 0xd4, 0xbe, 0x3b, 0x21, 0x5a, 0x56, 0x7a, 0x67, 0x8a, 0x5f, 0xb5, 0xfb, 0x7f, 0x02, 0x00,
-	0x00, 0xff, 0xff, 0xa1, 0x0e, 0x7b, 0x8a, 0x3e, 0x0a, 0x00, 0x00,
+	// 749 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xac, 0x56, 0xd1, 0x6e, 0xd3, 0x3c,
+	0x14, 0xfe, 0xd3, 0xac, 0xd9, 0xdf, 0x53, 0xad, 0x1b, 0xd6, 0x24, 0x4a, 0x2e, 0x50, 0x15, 0x60,
+	0x2b, 0x1b, 0xb8, 0x52, 0xe1, 0x62, 0xa0, 0x49, 0x68, 0xc0, 0x3a, 0xa6, 0x69, 0x02, 0x39, 0x53,
+	0x2f, 0xb8, 0x99, 0x42, 0xe2, 0x42, 0xd8, 0x96, 0x14, 0xdb, 0x05, 0xfa, 0x12, 0xbc, 0x03, 0x4f,
+	0x82, 0x76, 0xc9, 0x6b, 0x70, 0xcb, 0x4b, 0x20, 0xdb, 0x49, 0x96, 0x14, 0x48, 0xbb, 0x8e, 0xab,
+	0xd6, 0xf6, 0xf7, 0x9d, 0xf3, 0xf9, 0xf8, 0x3b, 0x47, 0x81, 0x75, 0xee, 0xbd, 0xf7, 0x58, 0xd8,
+	0xa1, 0xd1, 0xdb, 0x30, 0xa2, 0x1d, 0x2e, 0x62, 0x46, 0x3b, 0x8c, 0xfa, 0x31, 0x0b, 0x92, 0x1f,
+	0x3c, 0x64, 0xb1, 0x88, 0x91, 0xad, 0x81, 0x58, 0x03, 0xb1, 0x02, 0x62, 0x8d, 0xb0, 0x6f, 0x14,
+	0x83, 0x7c, 0xf4, 0x4e, 0x47, 0x54, 0xd3, 0xec, 0xeb, 0xc5, 0xa3, 0x13, 0x3a, 0x9e, 0x38, 0x60,
+	0x43, 0xbf, 0xc3, 0x85, 0x27, 0x46, 0x5c, 0x1f, 0x38, 0xdb, 0xd0, 0xd8, 0xfd, 0x1c, 0x72, 0xc1,
+	0x09, 0xe5, 0xc3, 0x38, 0xe2, 0x14, 0x6d, 0x80, 0xa5, 0x11, 0x4d, 0xa3, 0x65, 0xb6, 0xeb, 0x5d,
+	0x84, 0x13, 0x2d, 0x6c, 0xe8, 0x63, 0x57, 0x9d, 0x90, 0x04, 0xe1, 0x6c, 0x42, 0xed, 0x88, 0x79,
+	0x11, 0x1f, 0xc4, 0xec, 0x0c, 0xdd, 0x04, 0x08, 0x03, 0x1a, 0x89, 0x70, 0x10, 0x52, 0xd6, 0x34,
+	0x5a, 0x46, 0xbb, 0x46, 0x72, 0x3b, 0xce, 0x57, 0x03, 0x2c, 0xa2, 0xae, 0x80, 0x7a, 0x60, 0x29,
+	0xd9, 0x69, 0x0e, 0x8c, 0xff, 0x7e, 0x5f, 0xac, 0x39, 0xb8, 0xaf, 0x08, 0xbb, 0x91, 0x60, 0x63,
+	0x92, 0xb0, 0xed, 0x97, 0x50, 0xcf, 0x6d, 0xa3, 0x15, 0x30, 0x4f, 0xe8, 0x38, 0x49, 0x2d, 0xff,
+	0xa2, 0x0d, 0xa8, 0x2a, 0x68, 0xb3, 0xd2, 0x32, 0xda, 0xf5, 0xee, 0xea, 0x44, 0x1e, 0x45, 0x26,
+	0x1a, 0xf2, 0xb8, 0xb2, 0x65, 0x38, 0x5f, 0x0c, 0x58, 0xd4, 0xf9, 0x38, 0xda, 0x86, 0x45, 0xad,
+	0x20, 0x55, 0xe9, 0x4c, 0x57, 0x49, 0x52, 0x0a, 0xda, 0x05, 0x10, 0x69, 0x69, 0x78, 0xb3, 0xa2,
+	0x02, 0xdc, 0x29, 0x0b, 0x90, 0x15, 0x92, 0xe4, 0x88, 0x8e, 0x07, 0xf5, 0x9d, 0x20, 0xc8, 0x1e,
+	0x67, 0x0d, 0x16, 0x4e, 0xe8, 0xf8, 0xb7, 0xa7, 0x49, 0xe2, 0x1d, 0xd0, 0x31, 0x51, 0xe7, 0xb9,
+	0x47, 0xac, 0x4c, 0x7d, 0xc4, 0x4f, 0x50, 0xdf, 0xa3, 0x22, 0x4b, 0x71, 0xb5, 0x6b, 0x5f, 0x26,
+	0xf1, 0x36, 0x34, 0x9e, 0xd3, 0x53, 0x2a, 0xe8, 0x5c, 0xde, 0xc3, 0xb0, 0x70, 0x20, 0xaf, 0x3a,
+	0x63, 0x49, 0x9c, 0x1f, 0x26, 0x2c, 0x1d, 0x8e, 0x84, 0x27, 0xd3, 0x7d, 0x18, 0x51, 0x2e, 0x90,
+	0x0f, 0x2b, 0x5a, 0xf6, 0xf1, 0x99, 0xdc, 0x0f, 0xe3, 0x28, 0x8d, 0xb2, 0x55, 0x76, 0xe5, 0x42,
+	0x90, 0xa4, 0x00, 0x87, 0x49, 0x00, 0xb2, 0xcc, 0x0a, 0x6b, 0x6e, 0xff, 0xac, 0x40, 0xa3, 0x88,
+	0x41, 0xb7, 0x2f, 0x6c, 0xfa, 0x67, 0xc1, 0xca, 0xba, 0x31, 0x2c, 0x0f, 0x42, 0x7a, 0x9a, 0x17,
+	0xa7, 0x4b, 0xda, 0x9b, 0x57, 0x1c, 0xee, 0xc9, 0x78, 0x99, 0xd4, 0xc6, 0x20, 0xbf, 0xe4, 0xf6,
+	0xb9, 0x01, 0x4b, 0x05, 0x04, 0x5a, 0x85, 0xaa, 0xc2, 0x24, 0x1d, 0xa5, 0x17, 0xa8, 0x0d, 0x26,
+	0xa7, 0xa2, 0xac, 0xa3, 0x5e, 0xfc, 0x47, 0x24, 0x04, 0x3d, 0x84, 0x5a, 0x18, 0xf9, 0x8c, 0x9e,
+	0xd1, 0x48, 0x34, 0xcd, 0x52, 0xfc, 0x05, 0x10, 0x61, 0xb0, 0xbc, 0xe1, 0x90, 0x46, 0x41, 0x73,
+	0xa1, 0x94, 0x92, 0xa0, 0x9e, 0x02, 0xfc, 0x9f, 0x96, 0x48, 0x5a, 0x2a, 0xad, 0xc0, 0x1c, 0x96,
+	0x3a, 0x02, 0x70, 0x65, 0x27, 0x68, 0x7b, 0xf4, 0xa0, 0x2e, 0x8d, 0x73, 0xcc, 0xfd, 0x98, 0x65,
+	0x93, 0xaa, 0xb4, 0x85, 0x0f, 0xe8, 0xd8, 0x55, 0x60, 0x02, 0x92, 0xa9, 0xff, 0x3b, 0x8f, 0xa0,
+	0xee, 0xe6, 0xfa, 0xeb, 0x32, 0x82, 0x5e, 0xc3, 0xca, 0x7e, 0x5a, 0x97, 0x7f, 0x2d, 0xeb, 0x09,
+	0x5c, 0xcb, 0xc5, 0x9e, 0x43, 0xdc, 0xb9, 0x01, 0xb5, 0x2c, 0xf4, 0x8c, 0xa6, 0x7e, 0x06, 0x56,
+	0xa2, 0x5b, 0x7b, 0x79, 0x73, 0x26, 0xdd, 0x58, 0xfd, 0x90, 0x84, 0x6a, 0xef, 0x43, 0x55, 0x6d,
+	0x48, 0x7f, 0x0a, 0x2a, 0xc7, 0xab, 0x14, 0x5b, 0x23, 0x7a, 0x21, 0x77, 0xfd, 0x78, 0x14, 0x69,
+	0x87, 0x56, 0x89, 0x5e, 0xc8, 0x5d, 0x45, 0x57, 0x3e, 0xac, 0x10, 0xbd, 0xe8, 0x7e, 0x33, 0xa1,
+	0xea, 0xca, 0x9c, 0xc8, 0x05, 0x73, 0x27, 0x08, 0xd0, 0xad, 0xe9, 0xc3, 0x8e, 0xdb, 0xeb, 0x65,
+	0xa0, 0xfc, 0xb8, 0x7e, 0x05, 0xe6, 0x1e, 0x15, 0xa8, 0x35, 0xe5, 0x96, 0x53, 0x22, 0xe6, 0xa7,
+	0x73, 0x1f, 0x2c, 0x3d, 0x33, 0x67, 0x08, 0xba, 0x51, 0x86, 0x98, 0x98, 0xbc, 0xc7, 0x60, 0xe9,
+	0xc6, 0x41, 0x77, 0x67, 0x1e, 0x2f, 0xe5, 0x09, 0x26, 0xfa, 0xb0, 0x0f, 0x96, 0xfe, 0xd0, 0xb8,
+	0xaa, 0xf0, 0xe2, 0xe7, 0x4a, 0xf7, 0xbb, 0x91, 0xba, 0xa1, 0x0f, 0xa6, 0x4b, 0x05, 0x5a, 0x2b,
+	0x23, 0x5f, 0xb4, 0x77, 0x79, 0xc9, 0xf3, 0x0d, 0xfb, 0x0e, 0x6a, 0x59, 0xa3, 0xa0, 0x7b, 0x65,
+	0xac, 0xc9, 0x5e, 0xb5, 0xef, 0xcf, 0x88, 0xd6, 0x99, 0xde, 0x58, 0xea, 0x9b, 0xec, 0xc1, 0xaf,
+	0x00, 0x00, 0x00, 0xff, 0xff, 0x0b, 0x6a, 0xa7, 0xfe, 0x27, 0x0a, 0x00, 0x00,
 }
