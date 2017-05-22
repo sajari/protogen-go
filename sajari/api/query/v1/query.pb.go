@@ -46,11 +46,11 @@ const (
 	//
 	// A click token will be generated for each result.  To register a click see <the other
 	// API calls>.  Results which are returned and not clicked on will fall down rankings, and
-	// similarly low-ranked documents which receive clicks will be moved up the rankings.
+	// similarly low-ranked records which receive clicks will be moved up the rankings.
 	SearchRequest_Tracking_CLICK SearchRequest_Tracking_Type = 1
-	// Pos/neg tokens will be generated for each result.  Each document in the result set can be
+	// Pos/neg tokens will be generated for each result.  Each record in the result set can be
 	// marked with pos/neg value for the search.  This is then fed back into the ranking algorithm
-	// to improve future results.  Unlike CLICK, if no tokens are reported for documents then
+	// to improve future results.  Unlike CLICK, if no tokens are reported for records then
 	// no action is taken.
 	SearchRequest_Tracking_POS_NEG SearchRequest_Tracking_Type = 2
 )
@@ -140,14 +140,14 @@ type SearchRequest_Tracking struct {
 	// Tracking mode for query.
 	//
 	// Tracking is done using tokens which are added to result sets and identify individual results.
-	// Tokens are used to improve the ranking of documents by reporting clicks (i.e. positive action)
-	// or pos/neg (i.e positive or negative reporting) on the position of a document in results.
+	// Tokens are used to improve the ranking of records by reporting clicks (i.e. positive action)
+	// or pos/neg (i.e positive or negative reporting) on the position of a record in results.
 	Type SearchRequest_Tracking_Type `protobuf:"varint,1,opt,name=type,enum=sajari.api.query.v1.SearchRequest_Tracking_Type" json:"type,omitempty"`
 	// Query ID of the query.  If this is empty, then one is generated.
 	QueryId string `protobuf:"bytes,2,opt,name=query_id,json=queryId" json:"query_id,omitempty"`
 	// Sequence number of query.
 	Sequence int32 `protobuf:"varint,3,opt,name=sequence" json:"sequence,omitempty"`
-	// Tracking field (must be unique in the collection) used to identify documents in the collection.
+	// Tracking field (must be unique in the collection) used to identify records in the collection.
 	Field string `protobuf:"bytes,4,opt,name=field" json:"field,omitempty"`
 	// Custom values to be included in tracking data.
 	Data map[string]string `protobuf:"bytes,5,rep,name=data" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
@@ -200,7 +200,7 @@ type SearchResponse struct {
 	SearchResponse *sajari_engine_query_v1.SearchResponse `protobuf:"bytes,1,opt,name=search_response,json=searchResponse" json:"search_response,omitempty"`
 	// SearchRequest used in the query (if this has been changed).
 	SearchRequest *sajari_engine_query_v1.SearchRequest `protobuf:"bytes,2,opt,name=search_request,json=searchRequest" json:"search_request,omitempty"`
-	// Tokens which correspond to the result documents.
+	// Tokens which correspond to the result records.
 	Tokens []*Token `protobuf:"bytes,3,rep,name=tokens" json:"tokens,omitempty"`
 }
 
@@ -230,7 +230,7 @@ func (m *SearchResponse) GetTokens() []*Token {
 	return nil
 }
 
-// Tokens are used to mark result documents as well/poorly ranked for a query.
+// Tokens are used to mark result records as well/poorly ranked for a query.
 // TODO(dhowden): fix this comment!
 type Token struct {
 	// Types that are valid to be assigned to Token:
@@ -353,8 +353,8 @@ func _Token_OneofSizer(msg proto.Message) (n int) {
 	return n
 }
 
-// Click is a token that corresponds to selecting a document from a result set.
-// It is taken as an indication that this document is a good match for the
+// Click is a token that corresponds to selecting a record from a result set.
+// It is taken as an indication that this record is a good match for the
 // corresponding SearchRequest.
 type Token_Click struct {
 	Token string `protobuf:"bytes,1,opt,name=token" json:"token,omitempty"`
@@ -372,7 +372,7 @@ func (m *Token_Click) GetToken() string {
 	return ""
 }
 
-// PosNeg is a pair of tokens which are used to mark a document as a good/bad
+// PosNeg is a pair of tokens which are used to mark a record as a good/bad
 // result for a SearchRequest.
 type Token_PosNeg struct {
 	Pos string `protobuf:"bytes,1,opt,name=pos" json:"pos,omitempty"`

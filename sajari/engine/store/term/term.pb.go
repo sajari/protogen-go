@@ -76,7 +76,7 @@ type Infos_Info struct {
 	Id uint32 `protobuf:"varint,1,opt,name=id" json:"id,omitempty"`
 	// String representation.
 	Value string `protobuf:"bytes,2,opt,name=value" json:"value,omitempty"`
-	// Number of documents that contain the term.
+	// Number of records that contain the term.
 	NumDocs uint32 `protobuf:"varint,3,opt,name=num_docs,json=numDocs" json:"num_docs,omitempty"`
 	// Number of words in the term.
 	NumWords uint32 `protobuf:"varint,4,opt,name=num_words,json=numWords" json:"num_words,omitempty"`

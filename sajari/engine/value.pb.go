@@ -13,7 +13,7 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
-// Value is a repesentation data of columnular data for a document.
+// Value is a repesentation data of columnular data for a record.
 type Value struct {
 	// Types that are valid to be assigned to Value:
 	//	*Value_Null

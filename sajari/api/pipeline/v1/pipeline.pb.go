@@ -7,24 +7,21 @@ Package sajari_api_pipeline_v1 is a generated protocol buffer package.
 
 It is generated from these files:
 	sajari/api/pipeline/v1/pipeline.proto
+	sajari/api/pipeline/v1/query.proto
+	sajari/api/pipeline/v1/record.proto
 
 It has these top-level messages:
 	Pipeline
 	SearchRequest
 	SearchResponse
+	AddRequest
+	AddResponse
 */
 package sajari_api_pipeline_v1
 
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
-import sajari_api_query_v1 "github.com/sajari/protogen-go/sajari/api/query/v1"
-import sajari_engine_query_v1 "github.com/sajari/protogen-go/sajari/engine/query/v1"
-
-import (
-	context "golang.org/x/net/context"
-	grpc "google.golang.org/grpc"
-)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -39,9 +36,8 @@ const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 // Pipeline is an identifier used to specify a pipeline.
 type Pipeline struct {
-	// Types that are valid to be assigned to Pipeline:
-	//	*Pipeline_Name
-	Pipeline isPipeline_Pipeline `protobuf_oneof:"pipeline"`
+	// Name uniquely defines a pipeline.
+	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
 }
 
 func (m *Pipeline) Reset()                    { *m = Pipeline{} }
@@ -49,257 +45,26 @@ func (m *Pipeline) String() string            { return proto.CompactTextString(m
 func (*Pipeline) ProtoMessage()               {}
 func (*Pipeline) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
-type isPipeline_Pipeline interface {
-	isPipeline_Pipeline()
-}
-
-type Pipeline_Name struct {
-	Name string `protobuf:"bytes,1,opt,name=name,oneof"`
-}
-
-func (*Pipeline_Name) isPipeline_Pipeline() {}
-
-func (m *Pipeline) GetPipeline() isPipeline_Pipeline {
-	if m != nil {
-		return m.Pipeline
-	}
-	return nil
-}
-
 func (m *Pipeline) GetName() string {
-	if x, ok := m.GetPipeline().(*Pipeline_Name); ok {
-		return x.Name
+	if m != nil {
+		return m.Name
 	}
 	return ""
 }
 
-// XXX_OneofFuncs is for the internal use of the proto package.
-func (*Pipeline) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
-	return _Pipeline_OneofMarshaler, _Pipeline_OneofUnmarshaler, _Pipeline_OneofSizer, []interface{}{
-		(*Pipeline_Name)(nil),
-	}
-}
-
-func _Pipeline_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
-	m := msg.(*Pipeline)
-	// pipeline
-	switch x := m.Pipeline.(type) {
-	case *Pipeline_Name:
-		b.EncodeVarint(1<<3 | proto.WireBytes)
-		b.EncodeStringBytes(x.Name)
-	case nil:
-	default:
-		return fmt.Errorf("Pipeline.Pipeline has unexpected type %T", x)
-	}
-	return nil
-}
-
-func _Pipeline_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
-	m := msg.(*Pipeline)
-	switch tag {
-	case 1: // pipeline.name
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		x, err := b.DecodeStringBytes()
-		m.Pipeline = &Pipeline_Name{x}
-		return true, err
-	default:
-		return false, nil
-	}
-}
-
-func _Pipeline_OneofSizer(msg proto.Message) (n int) {
-	m := msg.(*Pipeline)
-	// pipeline
-	switch x := m.Pipeline.(type) {
-	case *Pipeline_Name:
-		n += proto.SizeVarint(1<<3 | proto.WireBytes)
-		n += proto.SizeVarint(uint64(len(x.Name)))
-		n += len(x.Name)
-	case nil:
-	default:
-		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
-	}
-	return n
-}
-
-// SearchRequest is a request to perform a search using a pipeline.
-type SearchRequest struct {
-	// Pipeline to run.
-	Pipeline *Pipeline `protobuf:"bytes,1,opt,name=pipeline" json:"pipeline,omitempty"`
-	// Values is a mapping of key -> value which should be substituted
-	// into the algorithm inputs.
-	Values map[string]string `protobuf:"bytes,2,rep,name=values" json:"values,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// Tracking is the tracking configuration.
-	Tracking *sajari_api_query_v1.SearchRequest_Tracking `protobuf:"bytes,3,opt,name=tracking" json:"tracking,omitempty"`
-}
-
-func (m *SearchRequest) Reset()                    { *m = SearchRequest{} }
-func (m *SearchRequest) String() string            { return proto.CompactTextString(m) }
-func (*SearchRequest) ProtoMessage()               {}
-func (*SearchRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
-
-func (m *SearchRequest) GetPipeline() *Pipeline {
-	if m != nil {
-		return m.Pipeline
-	}
-	return nil
-}
-
-func (m *SearchRequest) GetValues() map[string]string {
-	if m != nil {
-		return m.Values
-	}
-	return nil
-}
-
-func (m *SearchRequest) GetTracking() *sajari_api_query_v1.SearchRequest_Tracking {
-	if m != nil {
-		return m.Tracking
-	}
-	return nil
-}
-
-// SearchResponse is a response to a Search call.
-type SearchResponse struct {
-	// Input values with updates/modifications by querying system.
-	Values map[string]string `protobuf:"bytes,1,rep,name=values" json:"values,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// SearchResponse from the engine request.
-	SearchResponse *sajari_engine_query_v1.SearchResponse `protobuf:"bytes,2,opt,name=search_response,json=searchResponse" json:"search_response,omitempty"`
-	// Tokens which correspond to the result documents.
-	Tokens []*sajari_api_query_v1.Token `protobuf:"bytes,3,rep,name=tokens" json:"tokens,omitempty"`
-}
-
-func (m *SearchResponse) Reset()                    { *m = SearchResponse{} }
-func (m *SearchResponse) String() string            { return proto.CompactTextString(m) }
-func (*SearchResponse) ProtoMessage()               {}
-func (*SearchResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
-
-func (m *SearchResponse) GetValues() map[string]string {
-	if m != nil {
-		return m.Values
-	}
-	return nil
-}
-
-func (m *SearchResponse) GetSearchResponse() *sajari_engine_query_v1.SearchResponse {
-	if m != nil {
-		return m.SearchResponse
-	}
-	return nil
-}
-
-func (m *SearchResponse) GetTokens() []*sajari_api_query_v1.Token {
-	if m != nil {
-		return m.Tokens
-	}
-	return nil
-}
-
 func init() {
 	proto.RegisterType((*Pipeline)(nil), "sajari.api.pipeline.v1.Pipeline")
-	proto.RegisterType((*SearchRequest)(nil), "sajari.api.pipeline.v1.SearchRequest")
-	proto.RegisterType((*SearchResponse)(nil), "sajari.api.pipeline.v1.SearchResponse")
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConn
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion4
-
-// Client API for Query service
-
-type QueryClient interface {
-	Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error)
-}
-
-type queryClient struct {
-	cc *grpc.ClientConn
-}
-
-func NewQueryClient(cc *grpc.ClientConn) QueryClient {
-	return &queryClient{cc}
-}
-
-func (c *queryClient) Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error) {
-	out := new(SearchResponse)
-	err := grpc.Invoke(ctx, "/sajari.api.pipeline.v1.Query/Search", in, out, c.cc, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// Server API for Query service
-
-type QueryServer interface {
-	Search(context.Context, *SearchRequest) (*SearchResponse, error)
-}
-
-func RegisterQueryServer(s *grpc.Server, srv QueryServer) {
-	s.RegisterService(&_Query_serviceDesc, srv)
-}
-
-func _Query_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SearchRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).Search(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/sajari.api.pipeline.v1.Query/Search",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Search(ctx, req.(*SearchRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _Query_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "sajari.api.pipeline.v1.Query",
-	HandlerType: (*QueryServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Search",
-			Handler:    _Query_Search_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "sajari/api/pipeline/v1/pipeline.proto",
 }
 
 func init() { proto.RegisterFile("sajari/api/pipeline/v1/pipeline.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 361 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xa4, 0x52, 0x4f, 0x4b, 0xfb, 0x40,
-	0x14, 0xfc, 0x25, 0xf9, 0x35, 0xd4, 0x17, 0xac, 0xb2, 0x14, 0x09, 0xb9, 0x58, 0x0a, 0x2d, 0x05,
-	0x25, 0xa5, 0xf1, 0xa2, 0xe2, 0x49, 0x10, 0xff, 0x5c, 0xd4, 0xb5, 0xe8, 0x51, 0xd7, 0xb2, 0xd4,
-	0xd8, 0xba, 0x49, 0x77, 0xd3, 0x42, 0xbf, 0x8b, 0x1f, 0x56, 0xf2, 0x36, 0x89, 0x29, 0x8d, 0x58,
-	0xf0, 0xf6, 0x36, 0x3b, 0x33, 0x6f, 0x66, 0x36, 0xd0, 0x51, 0xec, 0x9d, 0xc9, 0xb0, 0xcf, 0xe2,
-	0xb0, 0x1f, 0x87, 0x31, 0x9f, 0x86, 0x82, 0xf7, 0x17, 0x83, 0x62, 0xf6, 0x63, 0x19, 0x25, 0x11,
-	0xd9, 0xd3, 0x30, 0x9f, 0xc5, 0xa1, 0x5f, 0x5c, 0x2d, 0x06, 0xde, 0x7e, 0x89, 0x3e, 0x9b, 0x73,
-	0xb9, 0x4c, 0xb9, 0x38, 0x68, 0xa2, 0xd7, 0xce, 0x00, 0x5c, 0x8c, 0x53, 0xe5, 0x2a, 0x4c, 0xfb,
-	0x10, 0xea, 0x77, 0x99, 0x26, 0x69, 0xc2, 0x7f, 0xc1, 0x3e, 0xb8, 0x6b, 0xb4, 0x8c, 0xde, 0xd6,
-	0xd5, 0x3f, 0x8a, 0xa7, 0x73, 0x80, 0x7a, 0xbe, 0xb5, 0xfd, 0x69, 0xc2, 0xf6, 0x03, 0x67, 0x72,
-	0xf4, 0x46, 0xf9, 0x6c, 0xce, 0x55, 0x42, 0xce, 0xbe, 0x6f, 0x91, 0xe7, 0x04, 0x2d, 0xbf, 0xda,
-	0xaf, 0x9f, 0xef, 0xa1, 0x05, 0x83, 0x5c, 0x83, 0xbd, 0x60, 0xd3, 0x39, 0x57, 0xae, 0xd9, 0xb2,
-	0x7a, 0x4e, 0x30, 0xf8, 0x89, 0xbb, 0xb2, 0xd4, 0x7f, 0x44, 0xce, 0x85, 0x48, 0xe4, 0x92, 0x66,
-	0x02, 0xe4, 0x12, 0xea, 0x89, 0x64, 0xa3, 0x49, 0x28, 0xc6, 0xae, 0x85, 0x46, 0x0e, 0xca, 0x62,
-	0x3a, 0xf3, 0x9a, 0xd2, 0x30, 0xa3, 0xd0, 0x82, 0xec, 0x9d, 0x80, 0x53, 0xd2, 0x27, 0xbb, 0x60,
-	0x4d, 0xf8, 0x52, 0x77, 0x42, 0xd3, 0x91, 0x34, 0xa1, 0x86, 0x3b, 0x5d, 0x13, 0xbf, 0xe9, 0xc3,
-	0xa9, 0x79, 0x6c, 0xa4, 0xf5, 0x34, 0x72, 0x7d, 0x15, 0x47, 0x42, 0x71, 0x72, 0x53, 0x24, 0x34,
-	0x30, 0x61, 0xf0, 0x5b, 0x42, 0xcd, 0xab, 0x8c, 0x78, 0x0b, 0x3b, 0x0a, 0x51, 0xcf, 0x32, 0x83,
-	0xa1, 0x05, 0x27, 0xe8, 0xe6, 0xa2, 0xfa, 0xa5, 0xd7, 0xc3, 0x6a, 0x34, 0x6d, 0xa8, 0x55, 0x73,
-	0x01, 0xd8, 0x49, 0x34, 0xe1, 0x42, 0xb9, 0x16, 0x9a, 0xf3, 0x2a, 0x1b, 0x1b, 0xa6, 0x10, 0x9a,
-	0x21, 0xff, 0x50, 0x4f, 0xf0, 0x02, 0xb5, 0xfb, 0x54, 0x94, 0x3c, 0x81, 0xad, 0x9d, 0x91, 0xce,
-	0x46, 0x0f, 0xee, 0x75, 0x37, 0x6b, 0xed, 0xd5, 0xc6, 0x9f, 0xfa, 0xe8, 0x2b, 0x00, 0x00, 0xff,
-	0xff, 0x49, 0x45, 0xf0, 0x7d, 0x5a, 0x03, 0x00, 0x00,
+	// 97 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xe2, 0x52, 0x2d, 0x4e, 0xcc, 0x4a,
+	0x2c, 0xca, 0xd4, 0x4f, 0x2c, 0xc8, 0xd4, 0x2f, 0xc8, 0x2c, 0x48, 0xcd, 0xc9, 0xcc, 0x4b, 0xd5,
+	0x2f, 0x33, 0x84, 0xb3, 0xf5, 0x0a, 0x8a, 0xf2, 0x4b, 0xf2, 0x85, 0xc4, 0x20, 0xca, 0xf4, 0x12,
+	0x0b, 0x32, 0xf5, 0xe0, 0x52, 0x65, 0x86, 0x4a, 0x72, 0x5c, 0x1c, 0x01, 0x50, 0xae, 0x90, 0x10,
+	0x17, 0x4b, 0x5e, 0x62, 0x6e, 0xaa, 0x04, 0xa3, 0x02, 0xa3, 0x06, 0x67, 0x10, 0x98, 0x9d, 0xc4,
+	0x06, 0xd6, 0x6e, 0x0c, 0x08, 0x00, 0x00, 0xff, 0xff, 0xc6, 0xe2, 0xd9, 0x4b, 0x67, 0x00, 0x00,
+	0x00,
 }

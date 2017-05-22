@@ -98,7 +98,7 @@ type Field struct {
 	Type Field_Type `protobuf:"varint,4,opt,name=type,enum=sajari.engine.schema.Field_Type" json:"type,omitempty"`
 	// Repeated sets that fields are repeated values (i.e. a list of values).
 	Repeated bool `protobuf:"varint,5,opt,name=repeated" json:"repeated,omitempty"`
-	// Required sets that the field must be specified when adding new documents.
+	// Required sets that the field must be specified when adding new records.
 	Required bool `protobuf:"varint,6,opt,name=required" json:"required,omitempty"`
 	// Store is set to false if original values should not be stored. Ideal for large text
 	// fields that need to be indexed but will never be returned in results.
@@ -107,7 +107,7 @@ type Field struct {
 	// Only string and string array fields can be indexed.
 	Indexed bool `protobuf:"varint,8,opt,name=indexed" json:"indexed,omitempty"`
 	// Unique is set to true if this field should contain unique values. Unique
-	// fields also support indexing to assist with fast document lookups
+	// fields also support indexing to assist with fast record lookups
 	Unique bool `protobuf:"varint,9,opt,name=unique" json:"unique,omitempty"`
 }
 

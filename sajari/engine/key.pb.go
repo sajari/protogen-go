@@ -30,7 +30,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-// Key is a key-value pair that uniquely determines a document in a collection.
+// Key is a key-value pair that uniquely determines a record in a collection.
 // Any unique field in a collection can be used to create a key.
 type Key struct {
 	// Field is the meta field (must be a unique field).

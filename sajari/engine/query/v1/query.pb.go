@@ -223,24 +223,22 @@ func (Filter_Combinator_Operator) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor0, []int{8, 2, 0}
 }
 
-// SearchRequest encompasses all the parameters necessary to query a search index.  Search requests
-// allow callers to select documents from a collection and return them in a score-based
-// ordering.
+// SearchRequest contains all the parameters to query a collection.
 //
-// Documents in the search index can be queried/scored using a combination of:
+// Records in the collection can be queried/scored using a combination of:
 // 1. Field values (key-value pairs set by the user).  See Filter, FieldBoost, Sort.
-// 2. Terms (extracted from the body of the document, or from string-based indexed fields).
-//    See Body, Terms, InstanceBoost.
+// 2. Terms (extracted from the body of the record, or from string-based indexed fields,
+//    i.e. full-text style searching).  See Body, Terms, InstanceBoost.
 //
-// Quering a search index follows three main steps:
-// 1. Selecting potentially suitable documents to include in a result set.
-// 2. Ranking and sorting the documents based on configurable scoring and/or sorting rules.
-// 3. Computing aggregate statistical information from the result set.
+// Quering a collection follows three main steps:
+// 1. Select suitable records to include in a result set.
+// 2. Rank and sort the records based on scoring and/or sorting rules.
+// 3. Compute and aggregate statistical information from the result set.
 type SearchRequest struct {
-	// Filter is a rule checked against document field values.
+	// Filter is a rule checked against record field values.
 	//
-	// Only documents that match the filter will be included in the result.
-	// By default all documents are included.
+	// Only records that match the filter will be included in the result.
+	// By default all records are included.
 	Filter *Filter `protobuf:"bytes,1,opt,name=filter" json:"filter,omitempty"`
 	// IndexQuery is the matching configuration for index-based matching.
 	IndexQuery *SearchRequest_IndexQuery `protobuf:"bytes,2,opt,name=index_query,json=indexQuery" json:"index_query,omitempty"`
@@ -250,7 +248,7 @@ type SearchRequest struct {
 	Offset int32 `protobuf:"varint,4,opt,name=offset" json:"offset,omitempty"`
 	// Limit is the number of results to return.
 	Limit int32 `protobuf:"varint,5,opt,name=limit" json:"limit,omitempty"`
-	// Fields to be returned for each result in the results.
+	// Fields to be returned for each record in the results.
 	// By default all fields are returned.
 	Fields []string `protobuf:"bytes,6,rep,name=fields" json:"fields,omitempty"`
 	// Sort ordering applied to results.
@@ -331,20 +329,23 @@ func (m *SearchRequest) GetTransforms() []*Transform {
 	return nil
 }
 
-// IndexQuery defines criteria for matching documents based on the search index.
+// IndexQuery defines criteria for matching and scoring records based on full-text style
+// term matching and record field values.
+//
+// All boost applied here are multiplicative.
 type SearchRequest_IndexQuery struct {
 	// Body is a list of weighted free text.
 	Body []*Body `protobuf:"bytes,1,rep,name=body" json:"body,omitempty"`
 	// Terms is a list of weighted terms, where terms represent tokenised sequences of text.
 	Terms []*Term `protobuf:"bytes,2,rep,name=terms" json:"terms,omitempty"`
-	// InstanceBoosts are a list of boost rules computed against a document's term instances.
+	// InstanceBoosts are boost rules computed against a record's term instances.
 	//
-	// Instance boosting allows callers to boost documents which have terms that match
+	// Instance boosting allows callers to boost records which have terms that match
 	// a rule.
 	InstanceBoosts []*InstanceBoost `protobuf:"bytes,3,rep,name=instance_boosts,json=instanceBoosts" json:"instance_boosts,omitempty"`
-	// FieldBoosts are a list of rules checked against a document's field values.
+	// FieldBoosts are rules checked against a record's field values.
 	//
-	// Field boosting allows callers to boost documents which have field values that
+	// Field boosting allows callers to boost records which have field values that
 	// match a rule.
 	FieldBoosts []*FieldBoost `protobuf:"bytes,4,rep,name=field_boosts,json=fieldBoosts" json:"field_boosts,omitempty"`
 }
@@ -382,7 +383,7 @@ func (m *SearchRequest_IndexQuery) GetFieldBoosts() []*FieldBoost {
 	return nil
 }
 
-// FeatureQuery
+// FeatureQuery defines criteria for boosting
 type SearchRequest_FeatureQuery struct {
 	// A list of field boosts.
 	FieldBoosts []*SearchRequest_FeatureQuery_FieldBoost `protobuf:"bytes,1,rep,name=field_boosts,json=fieldBoosts" json:"field_boosts,omitempty"`
@@ -404,7 +405,7 @@ func (m *SearchRequest_FeatureQuery) GetFieldBoosts() []*SearchRequest_FeatureQu
 type SearchRequest_FeatureQuery_FieldBoost struct {
 	// FieldBoost to make a feature boost.
 	FieldBoost *FieldBoost `protobuf:"bytes,1,opt,name=field_boost,json=fieldBoost" json:"field_boost,omitempty"`
-	// Amount this boost will contribute to the overall score of the document.
+	// Amount this boost will contribute to the overall score of the record.
 	//
 	// Must be between 0 and 1.
 	Value float64 `protobuf:"fixed64,2,opt,name=value" json:"value,omitempty"`
@@ -554,7 +555,7 @@ func (m *EvaluateRequest) GetRecord() map[string]*sajari_engine.Value {
 type SubstituteRequest struct {
 	// Request is used as a template
 	SearchRequest *SearchRequest `protobuf:"bytes,1,opt,name=search_request,json=searchRequest" json:"search_request,omitempty"`
-	// Document is the record to be substituted in the request.
+	// Record is the record to be substituted in the request.
 	Record map[string]*sajari_engine.Value `protobuf:"bytes,2,rep,name=record" json:"record,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 }
 
@@ -804,7 +805,7 @@ func (m *Aggregate_Count) GetField() string {
 	return ""
 }
 
-// Bucket groups documents using filters, Documents which satisfy the filter
+// Bucket groups records using filters, Records which satisfy the filter
 // will be included in the bucket.
 type Aggregate_Bucket struct {
 	// List of buckets.
@@ -823,11 +824,11 @@ func (m *Aggregate_Bucket) GetBuckets() []*Aggregate_Bucket_Bucket {
 	return nil
 }
 
-// Bucket represents documents which satisfy a Filter.
+// Bucket represents records which satisfy a Filter.
 type Aggregate_Bucket_Bucket struct {
 	// Name of the bucket.
 	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	// Filter satisfied by documents in the bucket.
+	// Filter satisfied by records in the bucket.
 	Filter *Filter `protobuf:"bytes,2,opt,name=filter" json:"filter,omitempty"`
 }
 
@@ -850,7 +851,7 @@ func (m *Aggregate_Bucket_Bucket) GetFilter() *Filter {
 	return nil
 }
 
-// Sort defines the ordering of result documents using.
+// Sort defines the ordering of result records using.
 type Sort struct {
 	// Types that are valid to be assigned to Type:
 	//	*Sort_Score
@@ -1036,7 +1037,7 @@ func _Sort_OneofSizer(msg proto.Message) (n int) {
 	return n
 }
 
-// Filter describes a set of conditions to match values in document fields.
+// Filter describes a set of conditions to match values in record fields.
 // Filters can be nested and combined using Combinators.
 type Filter struct {
 	// Types that are valid to be assigned to Filter:
@@ -1190,7 +1191,7 @@ func _Filter_OneofSizer(msg proto.Message) (n int) {
 	return n
 }
 
-// Field is a filter which is applied to a document field.
+// Field is a filter which is applied to a record field.
 type Filter_Field struct {
 	// The comparison operator to use.
 	Operator Filter_Field_Operator `protobuf:"varint,1,opt,name=operator,enum=sajari.engine.query.v1.Filter_Field_Operator" json:"operator,omitempty"`
@@ -1226,7 +1227,7 @@ func (m *Filter_Field) GetValue() *sajari_engine.Value {
 	return nil
 }
 
-// Geo is a geo-based filter for documents with lat/lng fields representing a location.
+// Geo is a geo-based filter for records with lat/lng fields representing a location.
 type Filter_Geo struct {
 	// Field containing latitude (degrees).
 	FieldLat string `protobuf:"bytes,1,opt,name=field_lat,json=fieldLat" json:"field_lat,omitempty"`
@@ -1316,7 +1317,7 @@ func (m *Filter_Combinator) GetFilters() []*Filter {
 	return nil
 }
 
-// FieldBoost is used to influence the score of a document based on its field values.
+// FieldBoost is used to influence the score of a record based on its field values.
 //
 // The effect of a FieldBoost is the value that it contributes to the overall score.
 // All boost effects are between 0 and 1 inclusive.
@@ -1503,16 +1504,16 @@ func _FieldBoost_OneofSizer(msg proto.Message) (n int) {
 	return n
 }
 
-// Filter is a boost applied to documents which satisfy the filter.
+// Filter is a boost applied to records which satisfy a filter.
 type FieldBoost_Filter struct {
-	// Filter which must be satisfied by document.
+	// Filter which must be satisfied by record.
 	Filter *Filter `protobuf:"bytes,1,opt,name=filter" json:"filter,omitempty"`
-	// Boost value to apply to matching documents. Must be >= 0.
+	// Boost value to apply to matching records. Must be >= 0.
 	//
-	// Value == 0     Matching documents get 0 for this boost, everything else gets 1.
-	// Value == 1     Matching documents get 1 for this boost, everything else gets 0.
-	// 0 < Value < 1  Matching documents get Value for this boost (and are penalised).
-	// Value > 1      Matching documents get 1 for this boost, everything else gets 1 / Value.
+	// Value == 0     Matching records get 0 for this boost, everything else gets 1.
+	// Value == 1     Matching records get 1 for this boost, everything else gets 0.
+	// 0 < Value < 1  Matching records get Value for this boost (and are penalised).
+	// Value > 1      Matching records get 1 for this boost, everything else gets 1 / Value.
 	Value float64 `protobuf:"fixed64,2,opt,name=value" json:"value,omitempty"`
 }
 
@@ -1535,7 +1536,7 @@ func (m *FieldBoost_Filter) GetValue() float64 {
 	return 0
 }
 
-// Interval is a distance-based boosting for numeric fields.
+// Interval is a distance-based boost for numeric fields.
 //
 // It is comprised of a series of points to represent
 // any linear distribution across a numerical range.
@@ -1597,7 +1598,7 @@ func (m *FieldBoost_Interval_Point) GetValue() float64 {
 // Element is an element-based boost for repeated fields.
 //
 // The boost is evaluated as a portion of a list of values which appear
-// in the document field.
+// in the record field.
 //
 // Boost effect: between 0 and 1.
 type FieldBoost_Element struct {
@@ -1660,7 +1661,7 @@ func (m *FieldBoost_Text) GetText() string {
 
 // InstanceBoost represents a boosting which is a applied to instances of terms
 // in the reverse index.  This type of boost effectively dynamically ranks
-// documents for a given term
+// records for a given term
 type InstanceBoost struct {
 	// Types that are valid to be assigned to InstanceBoost:
 	//	*InstanceBoost_Field_
@@ -2048,7 +2049,7 @@ func (m *AggregateResponse_Buckets) GetBuckets() map[string]*AggregateResponse_B
 type AggregateResponse_Buckets_Bucket struct {
 	// Name of bucket.
 	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	// Number of documents in the bucket.
+	// Number of records in the bucket.
 	Count int32 `protobuf:"varint,2,opt,name=count" json:"count,omitempty"`
 }
 
@@ -2127,11 +2128,11 @@ func (m *SearchResponse) GetResults() []*Result {
 	return nil
 }
 
-// Result is a document as represented in a search result.
+// Result is a record as represented in a search result.
 type Result struct {
 	// Meta data in field-value pairs.
 	Values map[string]*sajari_engine.Value `protobuf:"bytes,1,rep,name=values" json:"values,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// Score (normalised) attributed to this document.
+	// Score (normalised) attributed to this record.
 	// Combines the index score and feature score.
 	Score float64 `protobuf:"fixed64,2,opt,name=score" json:"score,omitempty"`
 	// Index score.
@@ -2164,12 +2165,12 @@ func (m *Result) GetIndexScore() float64 {
 	return 0
 }
 
-// AnalyseRequest applies a search request to a document.
+// AnalyseRequest applies a search request to a record.
 type AnalyseRequest struct {
-	// Request is a search request which should be applied against a document
+	// Request is a search request which should be applied against a record
 	// in the store.
 	SearchRequest *SearchRequest `protobuf:"bytes,1,opt,name=search_request,json=searchRequest" json:"search_request,omitempty"`
-	// Key is a unique identifier corresponding to a document in the store.
+	// Key is a unique identifier corresponding to a record in the store.
 	Keys []*sajari_engine1.Key `protobuf:"bytes,2,rep,name=keys" json:"keys,omitempty"`
 }
 
@@ -2192,10 +2193,10 @@ func (m *AnalyseRequest) GetKeys() []*sajari_engine1.Key {
 	return nil
 }
 
-// AnalyseResponse contains the analysis of the document against the query
+// AnalyseResponse contains the analysis of the record against the query
 // request.
 type AnalyseResponse struct {
-	// Terms is the list of intersecting terms between the document and the
+	// Terms is the list of intersecting terms between the record and the
 	// search query request.
 	Terms []*AnalyseResponse_Terms `protobuf:"bytes,1,rep,name=terms" json:"terms,omitempty"`
 	// Status corresponding to each key in the request.
@@ -2221,7 +2222,7 @@ func (m *AnalyseResponse) GetStatus() []*sajari_rpc.Status {
 	return nil
 }
 
-// Terms is a list of terms which overlap for a particular document.
+// Terms is a list of terms which overlap for a particular record.
 type AnalyseResponse_Terms struct {
 	Terms []string `protobuf:"bytes,1,rep,name=terms" json:"terms,omitempty"`
 }
@@ -2295,17 +2296,15 @@ const _ = grpc.SupportPackageIsVersion4
 // Client API for Query service
 
 type QueryClient interface {
-	// Search takes a search request and returns a corresponding response containing.
-	// the search results and additional information on the search.
+	// Search runs a search query over all records in a collection.
 	Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error)
-	// Evaluate takes a search request and a document and runs the search against
-	// the document only.
+	// Evaluate runs a search query on a single record in a collection.
 	Evaluate(ctx context.Context, in *EvaluateRequest, opts ...grpc.CallOption) (*SearchResponse, error)
-	// Substitute takes a search request and a document and substitutes the document values
+	// Substitute takes a search request and a record and substitutes the record values
 	// in the request.
 	Substitute(ctx context.Context, in *SubstituteRequest, opts ...grpc.CallOption) (*SearchRequest, error)
-	// Analyse takes an AnalyseRequest (comprised of a search query and a document identifier) and computes
-	// the term overlap between the two.
+	// Analyse takes an AnalyseRequest (comprised of a search query and a record identifier)
+	// and computes the term overlap between the two.
 	Analyse(ctx context.Context, in *AnalyseRequest, opts ...grpc.CallOption) (*AnalyseResponse, error)
 }
 
@@ -2356,17 +2355,15 @@ func (c *queryClient) Analyse(ctx context.Context, in *AnalyseRequest, opts ...g
 // Server API for Query service
 
 type QueryServer interface {
-	// Search takes a search request and returns a corresponding response containing.
-	// the search results and additional information on the search.
+	// Search runs a search query over all records in a collection.
 	Search(context.Context, *SearchRequest) (*SearchResponse, error)
-	// Evaluate takes a search request and a document and runs the search against
-	// the document only.
+	// Evaluate runs a search query on a single record in a collection.
 	Evaluate(context.Context, *EvaluateRequest) (*SearchResponse, error)
-	// Substitute takes a search request and a document and substitutes the document values
+	// Substitute takes a search request and a record and substitutes the record values
 	// in the request.
 	Substitute(context.Context, *SubstituteRequest) (*SearchRequest, error)
-	// Analyse takes an AnalyseRequest (comprised of a search query and a document identifier) and computes
-	// the term overlap between the two.
+	// Analyse takes an AnalyseRequest (comprised of a search query and a record identifier)
+	// and computes the term overlap between the two.
 	Analyse(context.Context, *AnalyseRequest) (*AnalyseResponse, error)
 }
 
