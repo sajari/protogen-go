@@ -7,7 +7,7 @@ package sajari_api_pipeline_v1
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
-import sajari_engine_store_record "github.com/sajari/protogen-go/sajari/engine/store/record"
+import sajari_engine_store_record "code.sajari.com/protogen-go/sajari/engine/store/record"
 
 import (
 	context "golang.org/x/net/context"

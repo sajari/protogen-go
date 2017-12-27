@@ -17,7 +17,7 @@ done
 
 rm -fr sajari/
 
-pkgrepo_prefix="github.com/sajari/protogen-go"
+pkgrepo_prefix="code.sajari.com/protogen-go"
 
 pkg_map=""
 pkg_map="$pkg_map,Msajari/rpc/status.proto=$pkgrepo_prefix/sajari/rpc"

@@ -31,9 +31,9 @@ package sajari_engine_query_v1
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
-import sajari_engine "github.com/sajari/protogen-go/sajari/engine"
-import sajari_engine1 "github.com/sajari/protogen-go/sajari/engine"
-import sajari_rpc "github.com/sajari/protogen-go/sajari/rpc"
+import sajari_engine "code.sajari.com/protogen-go/sajari/engine"
+import sajari_engine1 "code.sajari.com/protogen-go/sajari/engine"
+import sajari_rpc "code.sajari.com/protogen-go/sajari/rpc"
 
 import (
 	context "golang.org/x/net/context"

@@ -19,8 +19,8 @@ package sajari_engine_schema
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
-import sajari_rpc "github.com/sajari/protogen-go/sajari/rpc"
-import sajari_rpc1 "github.com/sajari/protogen-go/sajari/rpc"
+import sajari_rpc "code.sajari.com/protogen-go/sajari/rpc"
+import sajari_rpc1 "code.sajari.com/protogen-go/sajari/rpc"
 
 import (
 	context "golang.org/x/net/context"
