@@ -9,6 +9,8 @@ import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -393,6 +395,17 @@ type AdminServer interface {
 	Delete(context.Context, *Model) (*rpc.Empty, error)
 }
 
+// UnimplementedAdminServer can be embedded to have forward compatible implementations.
+type UnimplementedAdminServer struct {
+}
+
+func (*UnimplementedAdminServer) Create(ctx context.Context, req *Model) (*rpc.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+}
+func (*UnimplementedAdminServer) Delete(ctx context.Context, req *Model) (*rpc.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+
 func RegisterAdminServer(s *grpc.Server, srv AdminServer) {
 	s.RegisterService(&_Admin_serviceDesc, srv)
 }
@@ -481,6 +494,14 @@ type QueryServer interface {
 	AutoComplete(context.Context, *AutoCompleteRequest) (*AutoCompleteResponse, error)
 }
 
+// UnimplementedQueryServer can be embedded to have forward compatible implementations.
+type UnimplementedQueryServer struct {
+}
+
+func (*UnimplementedQueryServer) AutoComplete(ctx context.Context, req *AutoCompleteRequest) (*AutoCompleteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AutoComplete not implemented")
+}
+
 func RegisterQueryServer(s *grpc.Server, srv QueryServer) {
 	s.RegisterService(&_Query_serviceDesc, srv)
 }
@@ -558,6 +579,17 @@ type TrainServer interface {
 	TrainCorpus(context.Context, *TrainCorpusRequest) (*rpc.Empty, error)
 	// Train queries (used to assist with query popularity prediction).
 	TrainQuery(context.Context, *TrainQueryRequest) (*rpc.Empty, error)
+}
+
+// UnimplementedTrainServer can be embedded to have forward compatible implementations.
+type UnimplementedTrainServer struct {
+}
+
+func (*UnimplementedTrainServer) TrainCorpus(ctx context.Context, req *TrainCorpusRequest) (*rpc.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TrainCorpus not implemented")
+}
+func (*UnimplementedTrainServer) TrainQuery(ctx context.Context, req *TrainQueryRequest) (*rpc.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TrainQuery not implemented")
 }
 
 func RegisterTrainServer(s *grpc.Server, srv TrainServer) {

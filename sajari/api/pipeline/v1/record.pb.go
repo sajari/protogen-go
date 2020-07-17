@@ -9,6 +9,8 @@ import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -323,6 +325,20 @@ type StoreServer interface {
 	// Replace records in the collection using a store pipeline.
 	Replace(context.Context, *ReplaceRequest) (*ReplaceResponse, error)
 	Usage(context.Context, *UsageRequest) (*RecordUsageResponse, error)
+}
+
+// UnimplementedStoreServer can be embedded to have forward compatible implementations.
+type UnimplementedStoreServer struct {
+}
+
+func (*UnimplementedStoreServer) Add(ctx context.Context, req *AddRequest) (*AddResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
+}
+func (*UnimplementedStoreServer) Replace(ctx context.Context, req *ReplaceRequest) (*ReplaceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Replace not implemented")
+}
+func (*UnimplementedStoreServer) Usage(ctx context.Context, req *UsageRequest) (*RecordUsageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Usage not implemented")
 }
 
 func RegisterStoreServer(s *grpc.Server, srv StoreServer) {

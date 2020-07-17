@@ -10,6 +10,8 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	_struct "github.com/golang/protobuf/ptypes/struct"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -352,6 +354,17 @@ type StoreServer interface {
 	CreateRecord(context.Context, *CreateRecordRequest) (*CreateRecordResponse, error)
 	// Replace a record using a record pipeline.
 	ReplaceRecord(context.Context, *ReplaceRecordRequest) (*ReplaceRecordResponse, error)
+}
+
+// UnimplementedStoreServer can be embedded to have forward compatible implementations.
+type UnimplementedStoreServer struct {
+}
+
+func (*UnimplementedStoreServer) CreateRecord(ctx context.Context, req *CreateRecordRequest) (*CreateRecordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateRecord not implemented")
+}
+func (*UnimplementedStoreServer) ReplaceRecord(ctx context.Context, req *ReplaceRecordRequest) (*ReplaceRecordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReplaceRecord not implemented")
 }
 
 func RegisterStoreServer(s *grpc.Server, srv StoreServer) {

@@ -8,6 +8,8 @@ import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -190,6 +192,14 @@ func (c *interactionClient) ConsumeToken(ctx context.Context, in *ConsumeTokenRe
 type InteractionServer interface {
 	// Consume accepts and processes tokens from interactions.
 	ConsumeToken(context.Context, *ConsumeTokenRequest) (*ConsumeTokenResponse, error)
+}
+
+// UnimplementedInteractionServer can be embedded to have forward compatible implementations.
+type UnimplementedInteractionServer struct {
+}
+
+func (*UnimplementedInteractionServer) ConsumeToken(ctx context.Context, req *ConsumeTokenRequest) (*ConsumeTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConsumeToken not implemented")
 }
 
 func RegisterInteractionServer(s *grpc.Server, srv InteractionServer) {

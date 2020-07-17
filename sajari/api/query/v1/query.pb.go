@@ -10,6 +10,8 @@ import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -816,6 +818,20 @@ type QueryServer interface {
 	Evaluate(context.Context, *EvaluateRequest) (*EvaluateResponse, error)
 	// Analyse performs analysis on a search and a set of records.
 	Analyse(context.Context, *AnalyseRequest) (*AnalyseResponse, error)
+}
+
+// UnimplementedQueryServer can be embedded to have forward compatible implementations.
+type UnimplementedQueryServer struct {
+}
+
+func (*UnimplementedQueryServer) Search(ctx context.Context, req *SearchRequest) (*SearchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Search not implemented")
+}
+func (*UnimplementedQueryServer) Evaluate(ctx context.Context, req *EvaluateRequest) (*EvaluateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Evaluate not implemented")
+}
+func (*UnimplementedQueryServer) Analyse(ctx context.Context, req *AnalyseRequest) (*AnalyseResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Analyse not implemented")
 }
 
 func RegisterQueryServer(s *grpc.Server, srv QueryServer) {

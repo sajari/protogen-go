@@ -10,6 +10,8 @@ import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -1370,6 +1372,29 @@ type StoreServer interface {
 	Exists(context.Context, *Keys) (*ExistsResponse, error)
 }
 
+// UnimplementedStoreServer can be embedded to have forward compatible implementations.
+type UnimplementedStoreServer struct {
+}
+
+func (*UnimplementedStoreServer) Add(ctx context.Context, req *Records) (*AddResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
+}
+func (*UnimplementedStoreServer) Replace(ctx context.Context, req *ReplaceRequest) (*ReplaceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Replace not implemented")
+}
+func (*UnimplementedStoreServer) Get(ctx context.Context, req *Keys) (*GetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+}
+func (*UnimplementedStoreServer) Delete(ctx context.Context, req *Keys) (*DeleteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (*UnimplementedStoreServer) Mutate(ctx context.Context, req *MutateRequest) (*MutateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Mutate not implemented")
+}
+func (*UnimplementedStoreServer) Exists(ctx context.Context, req *Keys) (*ExistsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Exists not implemented")
+}
+
 func RegisterStoreServer(s *grpc.Server, srv StoreServer) {
 	s.RegisterService(&_Store_serviceDesc, srv)
 }
@@ -1557,6 +1582,17 @@ type ScoreServer interface {
 	Set(context.Context, *SetRequest) (*SetResponse, error)
 	// IncrScores incrementally updates record-term instance pos/neg scores in the Store.
 	Increment(context.Context, *IncrementRequest) (*IncrementResponse, error)
+}
+
+// UnimplementedScoreServer can be embedded to have forward compatible implementations.
+type UnimplementedScoreServer struct {
+}
+
+func (*UnimplementedScoreServer) Set(ctx context.Context, req *SetRequest) (*SetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Set not implemented")
+}
+func (*UnimplementedScoreServer) Increment(ctx context.Context, req *IncrementRequest) (*IncrementResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Increment not implemented")
 }
 
 func RegisterScoreServer(s *grpc.Server, srv ScoreServer) {

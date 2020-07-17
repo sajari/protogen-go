@@ -7,7 +7,10 @@ import (
 	context "context"
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	timestamp "github.com/golang/protobuf/ptypes/timestamp"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -23,11 +26,10 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type GetPipelineDocumentationRequest struct {
-	Type                 Type        `protobuf:"varint,1,opt,name=type,proto3,enum=sajari.pipeline.v2.Type" json:"type,omitempty"`
-	Pipeline             *Identifier `protobuf:"bytes,2,opt,name=pipeline,proto3" json:"pipeline,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
-	XXX_unrecognized     []byte      `json:"-"`
-	XXX_sizecache        int32       `json:"-"`
+	Pipeline             *TypeIdentifier `protobuf:"bytes,1,opt,name=pipeline,proto3" json:"pipeline,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
 }
 
 func (m *GetPipelineDocumentationRequest) Reset()         { *m = GetPipelineDocumentationRequest{} }
@@ -55,14 +57,7 @@ func (m *GetPipelineDocumentationRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GetPipelineDocumentationRequest proto.InternalMessageInfo
 
-func (m *GetPipelineDocumentationRequest) GetType() Type {
-	if m != nil {
-		return m.Type
-	}
-	return Type_TYPE_UNSPECIFIED
-}
-
-func (m *GetPipelineDocumentationRequest) GetPipeline() *Identifier {
+func (m *GetPipelineDocumentationRequest) GetPipeline() *TypeIdentifier {
 	if m != nil {
 		return m.Pipeline
 	}
@@ -71,21 +66,23 @@ func (m *GetPipelineDocumentationRequest) GetPipeline() *Identifier {
 
 // Usage is a message containing usage information for a query pipeline.
 type GetPipelineDocumentationResponse struct {
-	Type Type `protobuf:"varint,1,opt,name=type,proto3,enum=sajari.pipeline.v2.Type" json:"type,omitempty"`
-	// Pipeline is the pipeline that this describes.
-	Pipeline *Identifier `protobuf:"bytes,2,opt,name=pipeline,proto3" json:"pipeline,omitempty"`
-	// Steps is the list of steps that will be run for the pipeline.
-	PreSteps []*Step `protobuf:"bytes,3,rep,name=pre_steps,json=preSteps,proto3" json:"pre_steps,omitempty"`
-	// Steps is the list of steps that will be run after the record
-	// has been applied to the engine.
-	PostSteps []*Step `protobuf:"bytes,4,rep,name=post_steps,json=postSteps,proto3" json:"post_steps,omitempty"`
+	// Identifier for pipeline.
+	Pipeline *TypeIdentifier `protobuf:"bytes,1,opt,name=pipeline,proto3" json:"pipeline,omitempty"`
+	// Title.
+	Title string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	// Description.
+	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	// Steps that will be run.
+	Steps []*Steps `protobuf:"bytes,4,rep,name=steps,proto3" json:"steps,omitempty"`
 	// List of input parameters used in the pipeline.
 	Inputs []*Parameter `protobuf:"bytes,5,rep,name=inputs,proto3" json:"inputs,omitempty"`
 	// List of output parameters returned by the pipeline.
-	Outputs              []*Parameter `protobuf:"bytes,6,rep,name=outputs,proto3" json:"outputs,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
-	XXX_unrecognized     []byte       `json:"-"`
-	XXX_sizecache        int32        `json:"-"`
+	Outputs []*Parameter `protobuf:"bytes,6,rep,name=outputs,proto3" json:"outputs,omitempty"`
+	// Time that the pipeline was created.
+	CreateTime           *timestamp.Timestamp `protobuf:"bytes,7,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
+	XXX_unrecognized     []byte               `json:"-"`
+	XXX_sizecache        int32                `json:"-"`
 }
 
 func (m *GetPipelineDocumentationResponse) Reset()         { *m = GetPipelineDocumentationResponse{} }
@@ -113,30 +110,30 @@ func (m *GetPipelineDocumentationResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GetPipelineDocumentationResponse proto.InternalMessageInfo
 
-func (m *GetPipelineDocumentationResponse) GetType() Type {
-	if m != nil {
-		return m.Type
-	}
-	return Type_TYPE_UNSPECIFIED
-}
-
-func (m *GetPipelineDocumentationResponse) GetPipeline() *Identifier {
+func (m *GetPipelineDocumentationResponse) GetPipeline() *TypeIdentifier {
 	if m != nil {
 		return m.Pipeline
 	}
 	return nil
 }
 
-func (m *GetPipelineDocumentationResponse) GetPreSteps() []*Step {
+func (m *GetPipelineDocumentationResponse) GetTitle() string {
 	if m != nil {
-		return m.PreSteps
+		return m.Title
 	}
-	return nil
+	return ""
 }
 
-func (m *GetPipelineDocumentationResponse) GetPostSteps() []*Step {
+func (m *GetPipelineDocumentationResponse) GetDescription() string {
 	if m != nil {
-		return m.PostSteps
+		return m.Description
+	}
+	return ""
+}
+
+func (m *GetPipelineDocumentationResponse) GetSteps() []*Steps {
+	if m != nil {
+		return m.Steps
 	}
 	return nil
 }
@@ -155,18 +152,74 @@ func (m *GetPipelineDocumentationResponse) GetOutputs() []*Parameter {
 	return nil
 }
 
-// Parameter defines a parameter used in pipelines to pass
-// user-defined values.
+func (m *GetPipelineDocumentationResponse) GetCreateTime() *timestamp.Timestamp {
+	if m != nil {
+		return m.CreateTime
+	}
+	return nil
+}
+
+type Steps struct {
+	// Step type determines when the steps will be run.
+	StepType StepType `protobuf:"varint,1,opt,name=step_type,json=stepType,proto3,enum=sajari.pipeline.v2.StepType" json:"step_type,omitempty"`
+	// List of steps to run.
+	Steps                []*Step  `protobuf:"bytes,2,rep,name=steps,proto3" json:"steps,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Steps) Reset()         { *m = Steps{} }
+func (m *Steps) String() string { return proto.CompactTextString(m) }
+func (*Steps) ProtoMessage()    {}
+func (*Steps) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8fca4025792f792a, []int{2}
+}
+
+func (m *Steps) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Steps.Unmarshal(m, b)
+}
+func (m *Steps) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Steps.Marshal(b, m, deterministic)
+}
+func (m *Steps) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Steps.Merge(m, src)
+}
+func (m *Steps) XXX_Size() int {
+	return xxx_messageInfo_Steps.Size(m)
+}
+func (m *Steps) XXX_DiscardUnknown() {
+	xxx_messageInfo_Steps.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Steps proto.InternalMessageInfo
+
+func (m *Steps) GetStepType() StepType {
+	if m != nil {
+		return m.StepType
+	}
+	return StepType_STEP_TYPE_UNSPECIFIED
+}
+
+func (m *Steps) GetSteps() []*Step {
+	if m != nil {
+		return m.Steps
+	}
+	return nil
+}
+
+// Parameter defines a parameter used in pipelines to pass user-defined values.
+// It can be configured by the pipeline creater.
 type Parameter struct {
-	// Identifier for this parameter.
+	// Identifier for this parameter (from the step template).
 	Identifier string `protobuf:"bytes,1,opt,name=identifier,proto3" json:"identifier,omitempty"`
-	// Name of the pipeline parameter.
+	// Name of the parameter in this pipeline.
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	// Type of the pipeline parameter.
+	// Type of the pipeline parameter (from the step template).
 	Type string `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
-	// Description for the paramter.
+	// Description for the paramter in this pipeline.
 	Description string `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
-	// Default value of the parameter.
+	// Default value of the parameter in this pipeline.
 	DefaultValue         string   `protobuf:"bytes,5,opt,name=default_value,json=defaultValue,proto3" json:"default_value,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -177,7 +230,7 @@ func (m *Parameter) Reset()         { *m = Parameter{} }
 func (m *Parameter) String() string { return proto.CompactTextString(m) }
 func (*Parameter) ProtoMessage()    {}
 func (*Parameter) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8fca4025792f792a, []int{2}
+	return fileDescriptor_8fca4025792f792a, []int{3}
 }
 
 func (m *Parameter) XXX_Unmarshal(b []byte) error {
@@ -233,19 +286,17 @@ func (m *Parameter) GetDefaultValue() string {
 	return ""
 }
 
-// Constant defines a constant used in a pipeline step, set by
+// Constant defines a constant used in a pipeline step. The value can be set by
 // the pipeline creator but cannot be changed by the caller.
 type Constant struct {
-	// Identifier for the constant.
-	Identifier string `protobuf:"bytes,1,opt,name=identifier,proto3" json:"identifier,omitempty"`
-	// Name of the constant.
-	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	// Type of the constant.
-	Type string `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
-	// Description informtion for the constant.
-	Description string `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
-	// Value of the constant.
-	Value                string   `protobuf:"bytes,5,opt,name=value,proto3" json:"value,omitempty"`
+	// Name of the constant (from the step template).
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Type of the constant (from the step template).
+	Type string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
+	// Description informtion for the constant (from the step template).
+	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	// Value of the constant in this pipeline.
+	Value                string   `protobuf:"bytes,4,opt,name=value,proto3" json:"value,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -255,7 +306,7 @@ func (m *Constant) Reset()         { *m = Constant{} }
 func (m *Constant) String() string { return proto.CompactTextString(m) }
 func (*Constant) ProtoMessage()    {}
 func (*Constant) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8fca4025792f792a, []int{3}
+	return fileDescriptor_8fca4025792f792a, []int{4}
 }
 
 func (m *Constant) XXX_Unmarshal(b []byte) error {
@@ -275,13 +326,6 @@ func (m *Constant) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_Constant proto.InternalMessageInfo
-
-func (m *Constant) GetIdentifier() string {
-	if m != nil {
-		return m.Identifier
-	}
-	return ""
-}
 
 func (m *Constant) GetName() string {
 	if m != nil {
@@ -311,34 +355,40 @@ func (m *Constant) GetValue() string {
 	return ""
 }
 
-// Step represents a single unit of work performed by the pipeline.
+// Step represents a single unit of work performed by a pipeline.  Every pipeline
+// step is based on a StepTemplate defined by the system. Pipeline creators
+// override template values to customise the step to their needs.
 type Step struct {
-	// Type of pipeline this step applies to.
+	// Type of pipeline this step applies to (from the step template).
 	Type Type `protobuf:"varint,1,opt,name=type,proto3,enum=sajari.pipeline.v2.Type" json:"type,omitempty"`
-	// Type of step.
-	StepType StepType `protobuf:"varint,2,opt,name=step_type,json=stepType,proto3,enum=sajari.pipeline.v2.StepType" json:"step_type,omitempty"`
-	// Identifier
+	// Type of step (from the step template).
+	StepTypes []StepType `protobuf:"varint,2,rep,packed,name=step_types,json=stepTypes,proto3,enum=sajari.pipeline.v2.StepType" json:"step_types,omitempty"`
+	// Identifier of this step (from the step template).
 	Identifier string `protobuf:"bytes,3,opt,name=identifier,proto3" json:"identifier,omitempty"`
-	// Name of the action.
+	// Title of step in this pipeline.
 	Title string `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
-	// Description of the action.
+	// Description of the step in this pipeline.
 	Description string `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
 	// List of input parameters used by the step.
 	Inputs []*Parameter `protobuf:"bytes,6,rep,name=inputs,proto3" json:"inputs,omitempty"`
 	// List of output parameters returned by the step.
 	Outputs []*Parameter `protobuf:"bytes,7,rep,name=outputs,proto3" json:"outputs,omitempty"`
 	// List of constants used by the step.
-	Constants            []*Constant `protobuf:"bytes,8,rep,name=constants,proto3" json:"constants,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
-	XXX_unrecognized     []byte      `json:"-"`
-	XXX_sizecache        int32       `json:"-"`
+	Constants []*Constant `protobuf:"bytes,8,rep,name=constants,proto3" json:"constants,omitempty"`
+	// Condition that must pass for the step to be run.
+	Condition string `protobuf:"bytes,9,opt,name=condition,proto3" json:"condition,omitempty"`
+	// Annotations added to the request when the step is run.
+	Annotations          []string `protobuf:"bytes,10,rep,name=annotations,proto3" json:"annotations,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
 func (m *Step) Reset()         { *m = Step{} }
 func (m *Step) String() string { return proto.CompactTextString(m) }
 func (*Step) ProtoMessage()    {}
 func (*Step) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8fca4025792f792a, []int{4}
+	return fileDescriptor_8fca4025792f792a, []int{5}
 }
 
 func (m *Step) XXX_Unmarshal(b []byte) error {
@@ -366,11 +416,11 @@ func (m *Step) GetType() Type {
 	return Type_TYPE_UNSPECIFIED
 }
 
-func (m *Step) GetStepType() StepType {
+func (m *Step) GetStepTypes() []StepType {
 	if m != nil {
-		return m.StepType
+		return m.StepTypes
 	}
-	return StepType_STEP_TYPE_UNSPECIFIED
+	return nil
 }
 
 func (m *Step) GetIdentifier() string {
@@ -415,8 +465,22 @@ func (m *Step) GetConstants() []*Constant {
 	return nil
 }
 
-// ListStepsRequest is used to request a listing of steps.
-type ListStepsRequest struct {
+func (m *Step) GetCondition() string {
+	if m != nil {
+		return m.Condition
+	}
+	return ""
+}
+
+func (m *Step) GetAnnotations() []string {
+	if m != nil {
+		return m.Annotations
+	}
+	return nil
+}
+
+// ListStepTemplatesRequest is used to request a listing of step templates.
+type ListStepTemplatesRequest struct {
 	// Type of pipeline steps to list (query/record).
 	Type Type `protobuf:"varint,1,opt,name=type,proto3,enum=sajari.pipeline.v2.Type" json:"type,omitempty"`
 	// Step types to list (pre/post).
@@ -430,53 +494,53 @@ type ListStepsRequest struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *ListStepsRequest) Reset()         { *m = ListStepsRequest{} }
-func (m *ListStepsRequest) String() string { return proto.CompactTextString(m) }
-func (*ListStepsRequest) ProtoMessage()    {}
-func (*ListStepsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8fca4025792f792a, []int{5}
+func (m *ListStepTemplatesRequest) Reset()         { *m = ListStepTemplatesRequest{} }
+func (m *ListStepTemplatesRequest) String() string { return proto.CompactTextString(m) }
+func (*ListStepTemplatesRequest) ProtoMessage()    {}
+func (*ListStepTemplatesRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8fca4025792f792a, []int{6}
 }
 
-func (m *ListStepsRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListStepsRequest.Unmarshal(m, b)
+func (m *ListStepTemplatesRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListStepTemplatesRequest.Unmarshal(m, b)
 }
-func (m *ListStepsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListStepsRequest.Marshal(b, m, deterministic)
+func (m *ListStepTemplatesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListStepTemplatesRequest.Marshal(b, m, deterministic)
 }
-func (m *ListStepsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListStepsRequest.Merge(m, src)
+func (m *ListStepTemplatesRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListStepTemplatesRequest.Merge(m, src)
 }
-func (m *ListStepsRequest) XXX_Size() int {
-	return xxx_messageInfo_ListStepsRequest.Size(m)
+func (m *ListStepTemplatesRequest) XXX_Size() int {
+	return xxx_messageInfo_ListStepTemplatesRequest.Size(m)
 }
-func (m *ListStepsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListStepsRequest.DiscardUnknown(m)
+func (m *ListStepTemplatesRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListStepTemplatesRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ListStepsRequest proto.InternalMessageInfo
+var xxx_messageInfo_ListStepTemplatesRequest proto.InternalMessageInfo
 
-func (m *ListStepsRequest) GetType() Type {
+func (m *ListStepTemplatesRequest) GetType() Type {
 	if m != nil {
 		return m.Type
 	}
 	return Type_TYPE_UNSPECIFIED
 }
 
-func (m *ListStepsRequest) GetStepType() StepType {
+func (m *ListStepTemplatesRequest) GetStepType() StepType {
 	if m != nil {
 		return m.StepType
 	}
 	return StepType_STEP_TYPE_UNSPECIFIED
 }
 
-func (m *ListStepsRequest) GetPageSize() int32 {
+func (m *ListStepTemplatesRequest) GetPageSize() int32 {
 	if m != nil {
 		return m.PageSize
 	}
 	return 0
 }
 
-func (m *ListStepsRequest) GetPageToken() string {
+func (m *ListStepTemplatesRequest) GetPageToken() string {
 	if m != nil {
 		return m.PageToken
 	}
@@ -484,9 +548,9 @@ func (m *ListStepsRequest) GetPageToken() string {
 }
 
 // ListStepsResponse contains a list of steps.
-type ListStepsResponse struct {
+type ListStepTemplatesResponse struct {
 	// List of steps.
-	Steps []*ListStepsResponse_Step `protobuf:"bytes,1,rep,name=steps,proto3" json:"steps,omitempty"`
+	StepTemplates []*Step `protobuf:"bytes,1,rep,name=step_templates,json=stepTemplates,proto3" json:"step_templates,omitempty"`
 	// The next page token.
 	NextPageToken        string   `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -494,175 +558,89 @@ type ListStepsResponse struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *ListStepsResponse) Reset()         { *m = ListStepsResponse{} }
-func (m *ListStepsResponse) String() string { return proto.CompactTextString(m) }
-func (*ListStepsResponse) ProtoMessage()    {}
-func (*ListStepsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8fca4025792f792a, []int{6}
+func (m *ListStepTemplatesResponse) Reset()         { *m = ListStepTemplatesResponse{} }
+func (m *ListStepTemplatesResponse) String() string { return proto.CompactTextString(m) }
+func (*ListStepTemplatesResponse) ProtoMessage()    {}
+func (*ListStepTemplatesResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8fca4025792f792a, []int{7}
 }
 
-func (m *ListStepsResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListStepsResponse.Unmarshal(m, b)
+func (m *ListStepTemplatesResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListStepTemplatesResponse.Unmarshal(m, b)
 }
-func (m *ListStepsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListStepsResponse.Marshal(b, m, deterministic)
+func (m *ListStepTemplatesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListStepTemplatesResponse.Marshal(b, m, deterministic)
 }
-func (m *ListStepsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListStepsResponse.Merge(m, src)
+func (m *ListStepTemplatesResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListStepTemplatesResponse.Merge(m, src)
 }
-func (m *ListStepsResponse) XXX_Size() int {
-	return xxx_messageInfo_ListStepsResponse.Size(m)
+func (m *ListStepTemplatesResponse) XXX_Size() int {
+	return xxx_messageInfo_ListStepTemplatesResponse.Size(m)
 }
-func (m *ListStepsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListStepsResponse.DiscardUnknown(m)
+func (m *ListStepTemplatesResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListStepTemplatesResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ListStepsResponse proto.InternalMessageInfo
+var xxx_messageInfo_ListStepTemplatesResponse proto.InternalMessageInfo
 
-func (m *ListStepsResponse) GetSteps() []*ListStepsResponse_Step {
+func (m *ListStepTemplatesResponse) GetStepTemplates() []*Step {
 	if m != nil {
-		return m.Steps
+		return m.StepTemplates
 	}
 	return nil
 }
 
-func (m *ListStepsResponse) GetNextPageToken() string {
+func (m *ListStepTemplatesResponse) GetNextPageToken() string {
 	if m != nil {
 		return m.NextPageToken
 	}
 	return ""
 }
 
-// Step
-type ListStepsResponse_Step struct {
-	// Type of pipeline this step refers to.
-	Type Type `protobuf:"varint,1,opt,name=type,proto3,enum=sajari.pipeline.v2.Type" json:"type,omitempty"`
-	// Type of step (pre/post).
-	StepType StepType `protobuf:"varint,2,opt,name=step_type,json=stepType,proto3,enum=sajari.pipeline.v2.StepType" json:"step_type,omitempty"`
-	// Identifer for step.
-	Identifier string `protobuf:"bytes,3,opt,name=identifier,proto3" json:"identifier,omitempty"`
-	// Title of step.
-	Title string `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
-	// Description of step.
-	Description          string   `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *ListStepsResponse_Step) Reset()         { *m = ListStepsResponse_Step{} }
-func (m *ListStepsResponse_Step) String() string { return proto.CompactTextString(m) }
-func (*ListStepsResponse_Step) ProtoMessage()    {}
-func (*ListStepsResponse_Step) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8fca4025792f792a, []int{6, 0}
-}
-
-func (m *ListStepsResponse_Step) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListStepsResponse_Step.Unmarshal(m, b)
-}
-func (m *ListStepsResponse_Step) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListStepsResponse_Step.Marshal(b, m, deterministic)
-}
-func (m *ListStepsResponse_Step) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListStepsResponse_Step.Merge(m, src)
-}
-func (m *ListStepsResponse_Step) XXX_Size() int {
-	return xxx_messageInfo_ListStepsResponse_Step.Size(m)
-}
-func (m *ListStepsResponse_Step) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListStepsResponse_Step.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListStepsResponse_Step proto.InternalMessageInfo
-
-func (m *ListStepsResponse_Step) GetType() Type {
-	if m != nil {
-		return m.Type
-	}
-	return Type_TYPE_UNSPECIFIED
-}
-
-func (m *ListStepsResponse_Step) GetStepType() StepType {
-	if m != nil {
-		return m.StepType
-	}
-	return StepType_STEP_TYPE_UNSPECIFIED
-}
-
-func (m *ListStepsResponse_Step) GetIdentifier() string {
-	if m != nil {
-		return m.Identifier
-	}
-	return ""
-}
-
-func (m *ListStepsResponse_Step) GetTitle() string {
-	if m != nil {
-		return m.Title
-	}
-	return ""
-}
-
-func (m *ListStepsResponse_Step) GetDescription() string {
-	if m != nil {
-		return m.Description
-	}
-	return ""
-}
-
 // GetStepDocumentationRequest
-type GetStepDocumentationRequest struct {
+type GetStepTemplateDocumentationRequest struct {
 	// Type of pipeline to fetch step for.
 	Type Type `protobuf:"varint,1,opt,name=type,proto3,enum=sajari.pipeline.v2.Type" json:"type,omitempty"`
-	// Type of step to fetch.
-	StepType StepType `protobuf:"varint,2,opt,name=step_type,json=stepType,proto3,enum=sajari.pipeline.v2.StepType" json:"step_type,omitempty"`
-	// Identifier for step.
-	Identifier           string   `protobuf:"bytes,3,opt,name=identifier,proto3" json:"identifier,omitempty"`
+	// Identifier for step template.
+	Identifier           string   `protobuf:"bytes,2,opt,name=identifier,proto3" json:"identifier,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *GetStepDocumentationRequest) Reset()         { *m = GetStepDocumentationRequest{} }
-func (m *GetStepDocumentationRequest) String() string { return proto.CompactTextString(m) }
-func (*GetStepDocumentationRequest) ProtoMessage()    {}
-func (*GetStepDocumentationRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8fca4025792f792a, []int{7}
+func (m *GetStepTemplateDocumentationRequest) Reset()         { *m = GetStepTemplateDocumentationRequest{} }
+func (m *GetStepTemplateDocumentationRequest) String() string { return proto.CompactTextString(m) }
+func (*GetStepTemplateDocumentationRequest) ProtoMessage()    {}
+func (*GetStepTemplateDocumentationRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8fca4025792f792a, []int{8}
 }
 
-func (m *GetStepDocumentationRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GetStepDocumentationRequest.Unmarshal(m, b)
+func (m *GetStepTemplateDocumentationRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetStepTemplateDocumentationRequest.Unmarshal(m, b)
 }
-func (m *GetStepDocumentationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GetStepDocumentationRequest.Marshal(b, m, deterministic)
+func (m *GetStepTemplateDocumentationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetStepTemplateDocumentationRequest.Marshal(b, m, deterministic)
 }
-func (m *GetStepDocumentationRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetStepDocumentationRequest.Merge(m, src)
+func (m *GetStepTemplateDocumentationRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetStepTemplateDocumentationRequest.Merge(m, src)
 }
-func (m *GetStepDocumentationRequest) XXX_Size() int {
-	return xxx_messageInfo_GetStepDocumentationRequest.Size(m)
+func (m *GetStepTemplateDocumentationRequest) XXX_Size() int {
+	return xxx_messageInfo_GetStepTemplateDocumentationRequest.Size(m)
 }
-func (m *GetStepDocumentationRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetStepDocumentationRequest.DiscardUnknown(m)
+func (m *GetStepTemplateDocumentationRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetStepTemplateDocumentationRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetStepDocumentationRequest proto.InternalMessageInfo
+var xxx_messageInfo_GetStepTemplateDocumentationRequest proto.InternalMessageInfo
 
-func (m *GetStepDocumentationRequest) GetType() Type {
+func (m *GetStepTemplateDocumentationRequest) GetType() Type {
 	if m != nil {
 		return m.Type
 	}
 	return Type_TYPE_UNSPECIFIED
 }
 
-func (m *GetStepDocumentationRequest) GetStepType() StepType {
-	if m != nil {
-		return m.StepType
-	}
-	return StepType_STEP_TYPE_UNSPECIFIED
-}
-
-func (m *GetStepDocumentationRequest) GetIdentifier() string {
+func (m *GetStepTemplateDocumentationRequest) GetIdentifier() string {
 	if m != nil {
 		return m.Identifier
 	}
@@ -670,60 +648,41 @@ func (m *GetStepDocumentationRequest) GetIdentifier() string {
 }
 
 // GetStepDocumentationResponse
-type GetStepDocumentationResponse struct {
-	// Type of the pipeline.
-	Type Type `protobuf:"varint,1,opt,name=type,proto3,enum=sajari.pipeline.v2.Type" json:"type,omitempty"`
-	// Type of the step.
-	StepType StepType `protobuf:"varint,2,opt,name=step_type,json=stepType,proto3,enum=sajari.pipeline.v2.StepType" json:"step_type,omitempty"`
-	// Step information.
-	Step                 *Step    `protobuf:"bytes,3,opt,name=step,proto3" json:"step,omitempty"`
+type GetStepTemplateDocumentationResponse struct {
+	StepTemplate         *Step    `protobuf:"bytes,1,opt,name=step_template,json=stepTemplate,proto3" json:"step_template,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *GetStepDocumentationResponse) Reset()         { *m = GetStepDocumentationResponse{} }
-func (m *GetStepDocumentationResponse) String() string { return proto.CompactTextString(m) }
-func (*GetStepDocumentationResponse) ProtoMessage()    {}
-func (*GetStepDocumentationResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8fca4025792f792a, []int{8}
+func (m *GetStepTemplateDocumentationResponse) Reset()         { *m = GetStepTemplateDocumentationResponse{} }
+func (m *GetStepTemplateDocumentationResponse) String() string { return proto.CompactTextString(m) }
+func (*GetStepTemplateDocumentationResponse) ProtoMessage()    {}
+func (*GetStepTemplateDocumentationResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8fca4025792f792a, []int{9}
 }
 
-func (m *GetStepDocumentationResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GetStepDocumentationResponse.Unmarshal(m, b)
+func (m *GetStepTemplateDocumentationResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetStepTemplateDocumentationResponse.Unmarshal(m, b)
 }
-func (m *GetStepDocumentationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GetStepDocumentationResponse.Marshal(b, m, deterministic)
+func (m *GetStepTemplateDocumentationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetStepTemplateDocumentationResponse.Marshal(b, m, deterministic)
 }
-func (m *GetStepDocumentationResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetStepDocumentationResponse.Merge(m, src)
+func (m *GetStepTemplateDocumentationResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetStepTemplateDocumentationResponse.Merge(m, src)
 }
-func (m *GetStepDocumentationResponse) XXX_Size() int {
-	return xxx_messageInfo_GetStepDocumentationResponse.Size(m)
+func (m *GetStepTemplateDocumentationResponse) XXX_Size() int {
+	return xxx_messageInfo_GetStepTemplateDocumentationResponse.Size(m)
 }
-func (m *GetStepDocumentationResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetStepDocumentationResponse.DiscardUnknown(m)
+func (m *GetStepTemplateDocumentationResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetStepTemplateDocumentationResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetStepDocumentationResponse proto.InternalMessageInfo
+var xxx_messageInfo_GetStepTemplateDocumentationResponse proto.InternalMessageInfo
 
-func (m *GetStepDocumentationResponse) GetType() Type {
+func (m *GetStepTemplateDocumentationResponse) GetStepTemplate() *Step {
 	if m != nil {
-		return m.Type
-	}
-	return Type_TYPE_UNSPECIFIED
-}
-
-func (m *GetStepDocumentationResponse) GetStepType() StepType {
-	if m != nil {
-		return m.StepType
-	}
-	return StepType_STEP_TYPE_UNSPECIFIED
-}
-
-func (m *GetStepDocumentationResponse) GetStep() *Step {
-	if m != nil {
-		return m.Step
+		return m.StepTemplate
 	}
 	return nil
 }
@@ -731,14 +690,14 @@ func (m *GetStepDocumentationResponse) GetStep() *Step {
 func init() {
 	proto.RegisterType((*GetPipelineDocumentationRequest)(nil), "sajari.pipeline.v2.GetPipelineDocumentationRequest")
 	proto.RegisterType((*GetPipelineDocumentationResponse)(nil), "sajari.pipeline.v2.GetPipelineDocumentationResponse")
+	proto.RegisterType((*Steps)(nil), "sajari.pipeline.v2.Steps")
 	proto.RegisterType((*Parameter)(nil), "sajari.pipeline.v2.Parameter")
 	proto.RegisterType((*Constant)(nil), "sajari.pipeline.v2.Constant")
 	proto.RegisterType((*Step)(nil), "sajari.pipeline.v2.Step")
-	proto.RegisterType((*ListStepsRequest)(nil), "sajari.pipeline.v2.ListStepsRequest")
-	proto.RegisterType((*ListStepsResponse)(nil), "sajari.pipeline.v2.ListStepsResponse")
-	proto.RegisterType((*ListStepsResponse_Step)(nil), "sajari.pipeline.v2.ListStepsResponse.Step")
-	proto.RegisterType((*GetStepDocumentationRequest)(nil), "sajari.pipeline.v2.GetStepDocumentationRequest")
-	proto.RegisterType((*GetStepDocumentationResponse)(nil), "sajari.pipeline.v2.GetStepDocumentationResponse")
+	proto.RegisterType((*ListStepTemplatesRequest)(nil), "sajari.pipeline.v2.ListStepTemplatesRequest")
+	proto.RegisterType((*ListStepTemplatesResponse)(nil), "sajari.pipeline.v2.ListStepTemplatesResponse")
+	proto.RegisterType((*GetStepTemplateDocumentationRequest)(nil), "sajari.pipeline.v2.GetStepTemplateDocumentationRequest")
+	proto.RegisterType((*GetStepTemplateDocumentationResponse)(nil), "sajari.pipeline.v2.GetStepTemplateDocumentationResponse")
 }
 
 func init() {
@@ -746,50 +705,56 @@ func init() {
 }
 
 var fileDescriptor_8fca4025792f792a = []byte{
-	// 680 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x56, 0xcd, 0x6e, 0xd3, 0x4c,
-	0x14, 0xd5, 0x24, 0x71, 0x1a, 0xdf, 0x7e, 0xfd, 0x80, 0x51, 0x17, 0x56, 0xfa, 0x43, 0x30, 0x50,
-	0x55, 0xa8, 0xc4, 0x28, 0xa5, 0xaa, 0xda, 0x6e, 0x10, 0x20, 0x55, 0x48, 0x2c, 0x2a, 0xb7, 0x42,
-	0x88, 0x4d, 0xe4, 0x26, 0xb7, 0xd5, 0x40, 0xe2, 0x19, 0x3c, 0xe3, 0x8a, 0x76, 0xcf, 0x06, 0xde,
-	0x80, 0x07, 0xe0, 0x0d, 0x10, 0x8f, 0xd0, 0x97, 0xe9, 0x8e, 0x17, 0x40, 0x9e, 0xb1, 0x53, 0xd3,
-	0x38, 0xb4, 0x4d, 0xa1, 0x0b, 0x76, 0xe3, 0x3b, 0xe7, 0x78, 0xce, 0xbd, 0xf7, 0xcc, 0x0f, 0x2c,
-	0xc8, 0xe0, 0x6d, 0x10, 0x31, 0x4f, 0x30, 0x81, 0x3d, 0x16, 0xa2, 0x77, 0xd0, 0xf2, 0xba, 0xbc,
-	0x13, 0xf7, 0x31, 0x54, 0x81, 0x62, 0x3c, 0x6c, 0x8a, 0x88, 0x2b, 0x4e, 0xa9, 0xc1, 0x35, 0x33,
-	0x5c, 0xf3, 0xa0, 0x55, 0xbf, 0x53, 0xc0, 0x1d, 0xcc, 0x6b, 0x9a, 0xfb, 0x99, 0xc0, 0xed, 0x4d,
-	0x54, 0x5b, 0x69, 0xf4, 0x79, 0xfe, 0xcf, 0x3e, 0xbe, 0x8f, 0x51, 0x2a, 0xba, 0x04, 0x15, 0x75,
-	0x28, 0xd0, 0x21, 0x0d, 0xb2, 0xf8, 0x7f, 0xcb, 0x69, 0x0e, 0xaf, 0xd4, 0xdc, 0x39, 0x14, 0xe8,
-	0x6b, 0x14, 0x5d, 0x87, 0x5a, 0x36, 0xe3, 0x94, 0x1a, 0x64, 0x71, 0xb2, 0x35, 0x5f, 0xc4, 0x78,
-	0xd1, 0xc5, 0x50, 0xb1, 0x3d, 0x86, 0x91, 0x3f, 0xc0, 0xbb, 0x27, 0x25, 0x68, 0x8c, 0x56, 0x23,
-	0x05, 0x0f, 0x25, 0x5e, 0x9f, 0x1c, 0xba, 0x02, 0xb6, 0x88, 0xb0, 0x2d, 0x15, 0x0a, 0xe9, 0x94,
-	0x1b, 0xe5, 0xc5, 0xc9, 0xe2, 0xe5, 0xb6, 0x15, 0x0a, 0xbf, 0x26, 0x22, 0x4c, 0x06, 0x92, 0xae,
-	0x02, 0x08, 0x2e, 0x55, 0xca, 0xab, 0x9c, 0xc3, 0xb3, 0x13, 0xac, 0x21, 0xae, 0x40, 0x95, 0x85,
-	0x22, 0x56, 0xd2, 0xb1, 0x34, 0x69, 0xae, 0x88, 0xb4, 0x15, 0x44, 0x41, 0x1f, 0x15, 0x46, 0x7e,
-	0x0a, 0xa6, 0xab, 0x30, 0xc1, 0x63, 0xa5, 0x79, 0xd5, 0x8b, 0xf0, 0x32, 0xb4, 0xfb, 0x85, 0x80,
-	0x3d, 0x08, 0xd3, 0x79, 0x00, 0x36, 0xa8, 0x82, 0xae, 0xae, 0xed, 0xe7, 0x22, 0x94, 0x42, 0x25,
-	0x0c, 0xfa, 0xa6, 0x8a, 0xb6, 0xaf, 0xc7, 0x49, 0x4c, 0xf7, 0xa2, 0x6c, 0x62, 0xba, 0xe2, 0x0d,
-	0x98, 0xec, 0xa2, 0xec, 0x44, 0x4c, 0x24, 0x6d, 0x73, 0x2a, 0x7a, 0x2a, 0x1f, 0xa2, 0x77, 0x61,
-	0xaa, 0x8b, 0x7b, 0x41, 0xdc, 0x53, 0xed, 0x83, 0xa0, 0x17, 0xa3, 0x63, 0x69, 0xcc, 0x7f, 0x69,
-	0xf0, 0x55, 0x12, 0x73, 0x3f, 0x11, 0xa8, 0x3d, 0xe3, 0xa1, 0x54, 0x41, 0xa8, 0xae, 0x51, 0xdb,
-	0x34, 0x58, 0x79, 0x4d, 0xe6, 0xc3, 0xfd, 0x51, 0x82, 0x4a, 0xd2, 0xa3, 0x4b, 0x9a, 0x6f, 0x0d,
-	0xec, 0xc4, 0x04, 0x6d, 0x4d, 0x29, 0x69, 0xca, 0xec, 0x28, 0x23, 0x68, 0x5a, 0x4d, 0xa6, 0xa3,
-	0x33, 0x19, 0x97, 0x87, 0x32, 0x9e, 0x06, 0x4b, 0x31, 0xd5, 0xc3, 0x34, 0x07, 0xf3, 0x71, 0x36,
-	0x3f, 0x6b, 0x38, 0xbf, 0x53, 0x8f, 0x55, 0xc7, 0xf4, 0xd8, 0xc4, 0x65, 0x3c, 0x46, 0xd7, 0xc1,
-	0xee, 0xa4, 0x5d, 0x94, 0x4e, 0x4d, 0x53, 0x0b, 0x4b, 0x90, 0xb5, 0xda, 0x3f, 0x85, 0xbb, 0xdf,
-	0x09, 0xdc, 0x7c, 0xc9, 0xd2, 0xdd, 0x31, 0xde, 0x69, 0x74, 0x85, 0x0e, 0xcc, 0x80, 0x2d, 0x82,
-	0x7d, 0x6c, 0x4b, 0x76, 0x64, 0x4c, 0x64, 0xf9, 0xb5, 0x24, 0xb0, 0xcd, 0x8e, 0x90, 0xce, 0x01,
-	0xe8, 0x49, 0xc5, 0xdf, 0x61, 0xe6, 0x23, 0x0d, 0xdf, 0x49, 0x02, 0xee, 0x71, 0x09, 0x6e, 0xe5,
-	0x94, 0xa7, 0x27, 0xd7, 0x13, 0xb0, 0xcc, 0x99, 0x40, 0x74, 0x1d, 0x1e, 0x14, 0x09, 0x19, 0x62,
-	0x99, 0x53, 0xc2, 0x10, 0xe9, 0x02, 0xdc, 0x08, 0xf1, 0x83, 0x6a, 0xe7, 0xd6, 0x36, 0x96, 0x9f,
-	0x4a, 0xc2, 0x5b, 0xd9, 0xfa, 0xf5, 0x63, 0xf2, 0x8f, 0xf8, 0xd5, 0xfd, 0x4a, 0x60, 0x66, 0x13,
-	0x75, 0x49, 0xfe, 0xc0, 0xe5, 0xf4, 0xf7, 0x12, 0x74, 0xbf, 0x11, 0x98, 0x2d, 0x16, 0x3a, 0xd6,
-	0xbd, 0x75, 0x05, 0xa5, 0x4b, 0x50, 0x49, 0xc6, 0x5a, 0xe3, 0xef, 0x6e, 0x1e, 0x8d, 0x6a, 0x9d,
-	0x94, 0x60, 0xea, 0x17, 0xc1, 0xf4, 0x23, 0x01, 0x67, 0xd4, 0x2d, 0x4c, 0x97, 0x8b, 0x7e, 0x77,
-	0xce, 0x0b, 0xa2, 0xfe, 0xf8, 0x72, 0xa4, 0xb4, 0x60, 0xaf, 0xc1, 0x1e, 0xec, 0x06, 0x7a, 0xef,
-	0x9c, 0xcd, 0x62, 0x16, 0xba, 0x7f, 0xa1, 0x2d, 0x45, 0x0f, 0x61, 0xba, 0xa8, 0x55, 0xd4, 0x1b,
-	0xa1, 0x73, 0x94, 0xfb, 0xea, 0x8f, 0x2e, 0x4e, 0x30, 0x4b, 0x3f, 0xdd, 0x78, 0xb3, 0xd6, 0xe1,
-	0x5d, 0xcc, 0x78, 0x1d, 0xde, 0xf7, 0xf4, 0x4b, 0x6c, 0x1f, 0xc3, 0x87, 0xfb, 0xdc, 0x1b, 0x7e,
-	0xb1, 0x6d, 0x64, 0x63, 0xb1, 0xbb, 0x5b, 0xd5, 0xd0, 0xe5, 0x9f, 0x01, 0x00, 0x00, 0xff, 0xff,
-	0xfc, 0x1b, 0xb3, 0x0a, 0x15, 0x0a, 0x00, 0x00,
+	// 777 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x56, 0x41, 0x6f, 0xd3, 0x4a,
+	0x10, 0x96, 0x93, 0x38, 0x8d, 0x27, 0x4d, 0x9f, 0xde, 0xaa, 0x07, 0x37, 0xaf, 0x7d, 0x0d, 0x2e,
+	0xaa, 0x7a, 0x68, 0x1d, 0x29, 0x05, 0x95, 0x12, 0x01, 0x12, 0x20, 0x55, 0x48, 0x1c, 0x2a, 0xb7,
+	0xe2, 0xc0, 0x25, 0xda, 0x26, 0xd3, 0x68, 0x4b, 0x62, 0x1b, 0xef, 0xa6, 0xa2, 0x3d, 0xc3, 0x0f,
+	0xe0, 0x8a, 0xc4, 0xcf, 0xe0, 0xcc, 0xdf, 0xe2, 0x88, 0xbc, 0xeb, 0x75, 0x9d, 0xc6, 0x6e, 0x1a,
+	0xb8, 0xad, 0x67, 0xe7, 0xdb, 0x99, 0xf9, 0xbe, 0x99, 0x5d, 0xc3, 0x36, 0xa7, 0x17, 0x34, 0x62,
+	0xed, 0x90, 0x85, 0x38, 0x62, 0x3e, 0xb6, 0x2f, 0x3b, 0xed, 0x41, 0xd0, 0x9f, 0x8c, 0xd1, 0x17,
+	0x54, 0xb0, 0xc0, 0x77, 0xc3, 0x28, 0x10, 0x01, 0x21, 0xca, 0xcf, 0xd5, 0x7e, 0xee, 0x65, 0xa7,
+	0xf9, 0x20, 0x07, 0x9b, 0xee, 0x4b, 0x58, 0x73, 0x73, 0x18, 0x04, 0xc3, 0x11, 0xb6, 0xe5, 0xd7,
+	0xd9, 0xe4, 0xbc, 0x2d, 0xd8, 0x18, 0xb9, 0xa0, 0xe3, 0x50, 0x39, 0x38, 0x14, 0x36, 0x8f, 0x50,
+	0x1c, 0x27, 0xa8, 0xd7, 0xd9, 0xc8, 0x1e, 0x7e, 0x9c, 0x20, 0x17, 0xe4, 0x39, 0xd4, 0xf4, 0xa9,
+	0xb6, 0xd1, 0x32, 0x76, 0xea, 0x1d, 0xc7, 0x9d, 0xcd, 0xc6, 0x3d, 0xbd, 0x0a, 0xf1, 0xcd, 0x00,
+	0x7d, 0xc1, 0xce, 0x19, 0x46, 0x5e, 0x8a, 0x71, 0x7e, 0x95, 0xa0, 0x55, 0x1c, 0x83, 0x87, 0x81,
+	0xcf, 0xf1, 0x6f, 0x83, 0x90, 0x55, 0x30, 0x05, 0x13, 0x23, 0xb4, 0x4b, 0x2d, 0x63, 0xc7, 0xf2,
+	0xd4, 0x07, 0x69, 0x41, 0x7d, 0x80, 0xbc, 0x1f, 0xb1, 0x30, 0x0e, 0x66, 0x97, 0xe5, 0x5e, 0xd6,
+	0x44, 0xda, 0x60, 0x72, 0x81, 0x21, 0xb7, 0x2b, 0xad, 0xf2, 0x4e, 0xbd, 0xb3, 0x96, 0x17, 0xf4,
+	0x24, 0x76, 0xf0, 0x94, 0x1f, 0x79, 0x0c, 0x55, 0xe6, 0x87, 0x13, 0xc1, 0x6d, 0x53, 0x22, 0x36,
+	0xf2, 0x10, 0xc7, 0x34, 0xa2, 0x63, 0x14, 0x18, 0x79, 0x89, 0x33, 0x39, 0x80, 0xa5, 0x60, 0x22,
+	0x24, 0xae, 0x7a, 0x1f, 0x9c, 0xf6, 0x26, 0x5d, 0xa8, 0xf7, 0x23, 0xa4, 0x02, 0x7b, 0xb1, 0x74,
+	0xf6, 0x92, 0xe4, 0xa6, 0xe9, 0x2a, 0x5d, 0x5d, 0xad, 0xab, 0x7b, 0xaa, 0x75, 0xf5, 0x40, 0xb9,
+	0xc7, 0x06, 0x27, 0x02, 0x53, 0x26, 0x4f, 0x0e, 0xc1, 0x8a, 0xd3, 0xef, 0x89, 0xab, 0x50, 0xf1,
+	0xbb, 0xd2, 0x59, 0x2f, 0x2a, 0x35, 0xe6, 0xd8, 0xab, 0xf1, 0x64, 0x45, 0x5c, 0xcd, 0x50, 0x49,
+	0xe6, 0x6d, 0x17, 0xc1, 0x12, 0x82, 0x9c, 0x6f, 0x06, 0x58, 0x69, 0x1d, 0xe4, 0x7f, 0x00, 0x96,
+	0xea, 0x25, 0x23, 0x5b, 0x5e, 0xc6, 0x42, 0x08, 0x54, 0x7c, 0x3a, 0xd6, 0xb2, 0xc9, 0x75, 0x6c,
+	0x93, 0x79, 0x2a, 0xb9, 0xe4, 0xfa, 0xb6, 0x92, 0x95, 0x59, 0x25, 0xb7, 0xa0, 0x31, 0xc0, 0x73,
+	0x3a, 0x19, 0x89, 0xde, 0x25, 0x1d, 0x4d, 0xd0, 0x36, 0xa5, 0xcf, 0x72, 0x62, 0x7c, 0x17, 0xdb,
+	0x9c, 0x0b, 0xa8, 0xbd, 0x0a, 0x7c, 0x2e, 0xa8, 0x2f, 0xd2, 0xd0, 0x46, 0x4e, 0xe8, 0x52, 0x71,
+	0xe8, 0x9c, 0x26, 0x5a, 0x05, 0x53, 0x85, 0x54, 0x69, 0xa9, 0x0f, 0xe7, 0x47, 0x19, 0x2a, 0x31,
+	0x31, 0x64, 0x37, 0x39, 0x54, 0xf1, 0x6e, 0x17, 0xf5, 0x75, 0x12, 0xae, 0x0b, 0x90, 0x4a, 0xa5,
+	0x48, 0x9f, 0xa7, 0x95, 0xa5, 0xb5, 0xe2, 0xb7, 0xe8, 0x2e, 0xcf, 0xd0, 0x9d, 0x8e, 0x49, 0xe5,
+	0x8e, 0x31, 0x31, 0x67, 0x2b, 0xbc, 0xe9, 0xfa, 0xea, 0x1f, 0x76, 0xfd, 0xd2, 0x42, 0x5d, 0xff,
+	0x14, 0xac, 0x7e, 0xa2, 0x13, 0xb7, 0x6b, 0x12, 0x9a, 0xcb, 0x81, 0x16, 0xd3, 0xbb, 0x71, 0x27,
+	0xeb, 0x12, 0x3b, 0x60, 0xb2, 0x16, 0x4b, 0xd6, 0x72, 0x63, 0x88, 0x6b, 0xa5, 0xbe, 0x1f, 0xa8,
+	0xeb, 0x87, 0xdb, 0xd0, 0x2a, 0xc7, 0xb5, 0x66, 0x4c, 0xce, 0x4f, 0x03, 0xec, 0xb7, 0x8c, 0x0b,
+	0xc9, 0x2f, 0x8e, 0xc3, 0x11, 0x15, 0xc8, 0xf5, 0x65, 0xb8, 0x98, 0x96, 0x53, 0x63, 0x57, 0x5a,
+	0x68, 0xec, 0xfe, 0x03, 0x2b, 0xa4, 0x43, 0xec, 0x71, 0x76, 0xad, 0x26, 0xc1, 0xf4, 0x6a, 0xb1,
+	0xe1, 0x84, 0x5d, 0x23, 0xd9, 0x00, 0x90, 0x9b, 0x22, 0xf8, 0x80, 0x7a, 0x18, 0xa4, 0xfb, 0x69,
+	0x6c, 0x70, 0x3e, 0x1b, 0xb0, 0x96, 0x53, 0x41, 0x72, 0xd5, 0xbe, 0x80, 0x15, 0x95, 0x94, 0xde,
+	0xb1, 0x8d, 0x39, 0x93, 0xdd, 0xe0, 0xd9, 0x83, 0xc8, 0x36, 0xfc, 0xe3, 0xe3, 0x27, 0xd1, 0xcb,
+	0xa4, 0xa0, 0xe6, 0xa5, 0x11, 0x9b, 0x8f, 0xd3, 0x34, 0x38, 0x6c, 0x1d, 0xe1, 0x54, 0x12, 0xb9,
+	0xef, 0xcb, 0x62, 0x94, 0x4e, 0x77, 0x78, 0xe9, 0x76, 0x87, 0x3b, 0x08, 0x0f, 0xef, 0x0e, 0x9a,
+	0xb0, 0xf0, 0x0c, 0x1a, 0x53, 0x2c, 0x24, 0xaf, 0x4e, 0x31, 0x09, 0xcb, 0x59, 0x12, 0x3a, 0xdf,
+	0xcb, 0xd0, 0x98, 0x3a, 0x98, 0x7c, 0x31, 0xc0, 0x2e, 0x7a, 0xe6, 0xc8, 0x7e, 0xde, 0xb1, 0x73,
+	0x1e, 0xde, 0xe6, 0xa3, 0xc5, 0x40, 0x49, 0x61, 0x21, 0xfc, 0x3b, 0xa3, 0x3d, 0xd9, 0xcd, 0x3b,
+	0xaa, 0xa8, 0xc9, 0x9b, 0x7b, 0xf7, 0xf4, 0x4e, 0x22, 0x7e, 0x35, 0x60, 0xfd, 0x2e, 0xce, 0xc9,
+	0x41, 0x41, 0x21, 0xf3, 0x5a, 0xa3, 0xf9, 0x64, 0x71, 0xa0, 0xca, 0xe9, 0x65, 0xf7, 0xfd, 0x61,
+	0x3f, 0x18, 0xa0, 0xc6, 0xf7, 0x83, 0xb1, 0xfa, 0x07, 0x1a, 0xa2, 0xbf, 0x37, 0x0c, 0xda, 0xb3,
+	0x7f, 0x4e, 0x5d, 0xbd, 0x0e, 0xcf, 0xce, 0xaa, 0xd2, 0x75, 0xff, 0x77, 0x00, 0x00, 0x00, 0xff,
+	0xff, 0xfc, 0x66, 0x05, 0xd5, 0x9d, 0x09, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -806,10 +771,10 @@ const _ = grpc.SupportPackageIsVersion4
 type DocumentationClient interface {
 	// GetPipelineDocumentation.
 	GetPipelineDocumentation(ctx context.Context, in *GetPipelineDocumentationRequest, opts ...grpc.CallOption) (*GetPipelineDocumentationResponse, error)
-	// List steps.
-	ListSteps(ctx context.Context, in *ListStepsRequest, opts ...grpc.CallOption) (*ListStepsResponse, error)
-	// Get step documentation.
-	GetStepDocumentation(ctx context.Context, in *GetStepDocumentationRequest, opts ...grpc.CallOption) (*GetStepDocumentationResponse, error)
+	// List step templates that can be used in creating pipelines.
+	ListStepTemplates(ctx context.Context, in *ListStepTemplatesRequest, opts ...grpc.CallOption) (*ListStepTemplatesResponse, error)
+	// Get step template documentation.
+	GetStepTemplateDocumentation(ctx context.Context, in *GetStepTemplateDocumentationRequest, opts ...grpc.CallOption) (*GetStepTemplateDocumentationResponse, error)
 }
 
 type documentationClient struct {
@@ -829,18 +794,18 @@ func (c *documentationClient) GetPipelineDocumentation(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *documentationClient) ListSteps(ctx context.Context, in *ListStepsRequest, opts ...grpc.CallOption) (*ListStepsResponse, error) {
-	out := new(ListStepsResponse)
-	err := c.cc.Invoke(ctx, "/sajari.pipeline.v2.Documentation/ListSteps", in, out, opts...)
+func (c *documentationClient) ListStepTemplates(ctx context.Context, in *ListStepTemplatesRequest, opts ...grpc.CallOption) (*ListStepTemplatesResponse, error) {
+	out := new(ListStepTemplatesResponse)
+	err := c.cc.Invoke(ctx, "/sajari.pipeline.v2.Documentation/ListStepTemplates", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *documentationClient) GetStepDocumentation(ctx context.Context, in *GetStepDocumentationRequest, opts ...grpc.CallOption) (*GetStepDocumentationResponse, error) {
-	out := new(GetStepDocumentationResponse)
-	err := c.cc.Invoke(ctx, "/sajari.pipeline.v2.Documentation/GetStepDocumentation", in, out, opts...)
+func (c *documentationClient) GetStepTemplateDocumentation(ctx context.Context, in *GetStepTemplateDocumentationRequest, opts ...grpc.CallOption) (*GetStepTemplateDocumentationResponse, error) {
+	out := new(GetStepTemplateDocumentationResponse)
+	err := c.cc.Invoke(ctx, "/sajari.pipeline.v2.Documentation/GetStepTemplateDocumentation", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -851,10 +816,24 @@ func (c *documentationClient) GetStepDocumentation(ctx context.Context, in *GetS
 type DocumentationServer interface {
 	// GetPipelineDocumentation.
 	GetPipelineDocumentation(context.Context, *GetPipelineDocumentationRequest) (*GetPipelineDocumentationResponse, error)
-	// List steps.
-	ListSteps(context.Context, *ListStepsRequest) (*ListStepsResponse, error)
-	// Get step documentation.
-	GetStepDocumentation(context.Context, *GetStepDocumentationRequest) (*GetStepDocumentationResponse, error)
+	// List step templates that can be used in creating pipelines.
+	ListStepTemplates(context.Context, *ListStepTemplatesRequest) (*ListStepTemplatesResponse, error)
+	// Get step template documentation.
+	GetStepTemplateDocumentation(context.Context, *GetStepTemplateDocumentationRequest) (*GetStepTemplateDocumentationResponse, error)
+}
+
+// UnimplementedDocumentationServer can be embedded to have forward compatible implementations.
+type UnimplementedDocumentationServer struct {
+}
+
+func (*UnimplementedDocumentationServer) GetPipelineDocumentation(ctx context.Context, req *GetPipelineDocumentationRequest) (*GetPipelineDocumentationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPipelineDocumentation not implemented")
+}
+func (*UnimplementedDocumentationServer) ListStepTemplates(ctx context.Context, req *ListStepTemplatesRequest) (*ListStepTemplatesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListStepTemplates not implemented")
+}
+func (*UnimplementedDocumentationServer) GetStepTemplateDocumentation(ctx context.Context, req *GetStepTemplateDocumentationRequest) (*GetStepTemplateDocumentationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetStepTemplateDocumentation not implemented")
 }
 
 func RegisterDocumentationServer(s *grpc.Server, srv DocumentationServer) {
@@ -879,38 +858,38 @@ func _Documentation_GetPipelineDocumentation_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Documentation_ListSteps_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListStepsRequest)
+func _Documentation_ListStepTemplates_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListStepTemplatesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DocumentationServer).ListSteps(ctx, in)
+		return srv.(DocumentationServer).ListStepTemplates(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sajari.pipeline.v2.Documentation/ListSteps",
+		FullMethod: "/sajari.pipeline.v2.Documentation/ListStepTemplates",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DocumentationServer).ListSteps(ctx, req.(*ListStepsRequest))
+		return srv.(DocumentationServer).ListStepTemplates(ctx, req.(*ListStepTemplatesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Documentation_GetStepDocumentation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetStepDocumentationRequest)
+func _Documentation_GetStepTemplateDocumentation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetStepTemplateDocumentationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DocumentationServer).GetStepDocumentation(ctx, in)
+		return srv.(DocumentationServer).GetStepTemplateDocumentation(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sajari.pipeline.v2.Documentation/GetStepDocumentation",
+		FullMethod: "/sajari.pipeline.v2.Documentation/GetStepTemplateDocumentation",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DocumentationServer).GetStepDocumentation(ctx, req.(*GetStepDocumentationRequest))
+		return srv.(DocumentationServer).GetStepTemplateDocumentation(ctx, req.(*GetStepTemplateDocumentationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -924,12 +903,12 @@ var _Documentation_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Documentation_GetPipelineDocumentation_Handler,
 		},
 		{
-			MethodName: "ListSteps",
-			Handler:    _Documentation_ListSteps_Handler,
+			MethodName: "ListStepTemplates",
+			Handler:    _Documentation_ListStepTemplates_Handler,
 		},
 		{
-			MethodName: "GetStepDocumentation",
-			Handler:    _Documentation_GetStepDocumentation_Handler,
+			MethodName: "GetStepTemplateDocumentation",
+			Handler:    _Documentation_GetStepTemplateDocumentation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

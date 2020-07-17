@@ -9,6 +9,8 @@ import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -159,6 +161,14 @@ func (c *interactionClient) Consume(ctx context.Context, in *ConsumeRequest, opt
 type InteractionServer interface {
 	// Consume accepts and records interactions.
 	Consume(context.Context, *ConsumeRequest) (*rpc.Empty, error)
+}
+
+// UnimplementedInteractionServer can be embedded to have forward compatible implementations.
+type UnimplementedInteractionServer struct {
+}
+
+func (*UnimplementedInteractionServer) Consume(ctx context.Context, req *ConsumeRequest) (*rpc.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Consume not implemented")
 }
 
 func RegisterInteractionServer(s *grpc.Server, srv InteractionServer) {

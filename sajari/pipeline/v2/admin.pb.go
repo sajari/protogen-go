@@ -9,6 +9,8 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	timestamp "github.com/golang/protobuf/ptypes/timestamp"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -24,13 +26,11 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type GetPipelineRequest struct {
-	// Type of pipeline to get.
-	Type Type `protobuf:"varint,1,opt,name=type,proto3,enum=sajari.pipeline.v2.Type" json:"type,omitempty"`
 	// Identifier for pipeline.
-	Pipeline             *Identifier `protobuf:"bytes,2,opt,name=pipeline,proto3" json:"pipeline,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
-	XXX_unrecognized     []byte      `json:"-"`
-	XXX_sizecache        int32       `json:"-"`
+	Pipeline             *TypeIdentifier `protobuf:"bytes,1,opt,name=pipeline,proto3" json:"pipeline,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
 }
 
 func (m *GetPipelineRequest) Reset()         { *m = GetPipelineRequest{} }
@@ -58,14 +58,7 @@ func (m *GetPipelineRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GetPipelineRequest proto.InternalMessageInfo
 
-func (m *GetPipelineRequest) GetType() Type {
-	if m != nil {
-		return m.Type
-	}
-	return Type_TYPE_UNSPECIFIED
-}
-
-func (m *GetPipelineRequest) GetPipeline() *Identifier {
+func (m *GetPipelineRequest) GetPipeline() *TypeIdentifier {
 	if m != nil {
 		return m.Pipeline
 	}
@@ -73,19 +66,10 @@ func (m *GetPipelineRequest) GetPipeline() *Identifier {
 }
 
 type GetPipelineResponse struct {
-	// Type of the pipeline.
-	Type Type `protobuf:"varint,1,opt,name=type,proto3,enum=sajari.pipeline.v2.Type" json:"type,omitempty"`
-	// Pipeline.
-	Pipeline *Identifier `protobuf:"bytes,2,opt,name=pipeline,proto3" json:"pipeline,omitempty"`
-	// List of steps that the pipeline will run.
-	PreSteps []*StepConfig `protobuf:"bytes,3,rep,name=pre_steps,json=preSteps,proto3" json:"pre_steps,omitempty"`
-	// List of steps that will be run after the action has been performed.
-	PostSteps []*StepConfig `protobuf:"bytes,4,rep,name=post_steps,json=postSteps,proto3" json:"post_steps,omitempty"`
-	// Time when the pipeline was created.
-	CreateTime           *timestamp.Timestamp `protobuf:"bytes,5,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
-	XXX_unrecognized     []byte               `json:"-"`
-	XXX_sizecache        int32                `json:"-"`
+	Pipeline             *Pipeline `protobuf:"bytes,1,opt,name=pipeline,proto3" json:"pipeline,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
+	XXX_unrecognized     []byte    `json:"-"`
+	XXX_sizecache        int32     `json:"-"`
 }
 
 func (m *GetPipelineResponse) Reset()         { *m = GetPipelineResponse{} }
@@ -113,49 +97,19 @@ func (m *GetPipelineResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GetPipelineResponse proto.InternalMessageInfo
 
-func (m *GetPipelineResponse) GetType() Type {
-	if m != nil {
-		return m.Type
-	}
-	return Type_TYPE_UNSPECIFIED
-}
-
-func (m *GetPipelineResponse) GetPipeline() *Identifier {
+func (m *GetPipelineResponse) GetPipeline() *Pipeline {
 	if m != nil {
 		return m.Pipeline
 	}
 	return nil
 }
 
-func (m *GetPipelineResponse) GetPreSteps() []*StepConfig {
-	if m != nil {
-		return m.PreSteps
-	}
-	return nil
-}
-
-func (m *GetPipelineResponse) GetPostSteps() []*StepConfig {
-	if m != nil {
-		return m.PostSteps
-	}
-	return nil
-}
-
-func (m *GetPipelineResponse) GetCreateTime() *timestamp.Timestamp {
-	if m != nil {
-		return m.CreateTime
-	}
-	return nil
-}
-
 type SetDefaultPipelineRequest struct {
-	// Type of the pipeline.
-	Type Type `protobuf:"varint,1,opt,name=type,proto3,enum=sajari.pipeline.v2.Type" json:"type,omitempty"`
-	// Identfier for the pipeline.
-	Pipeline             *Identifier `protobuf:"bytes,2,opt,name=pipeline,proto3" json:"pipeline,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
-	XXX_unrecognized     []byte      `json:"-"`
-	XXX_sizecache        int32       `json:"-"`
+	// Identifier for pipeline.
+	Pipeline             *TypeIdentifier `protobuf:"bytes,1,opt,name=pipeline,proto3" json:"pipeline,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
 }
 
 func (m *SetDefaultPipelineRequest) Reset()         { *m = SetDefaultPipelineRequest{} }
@@ -183,14 +137,7 @@ func (m *SetDefaultPipelineRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_SetDefaultPipelineRequest proto.InternalMessageInfo
 
-func (m *SetDefaultPipelineRequest) GetType() Type {
-	if m != nil {
-		return m.Type
-	}
-	return Type_TYPE_UNSPECIFIED
-}
-
-func (m *SetDefaultPipelineRequest) GetPipeline() *Identifier {
+func (m *SetDefaultPipelineRequest) GetPipeline() *TypeIdentifier {
 	if m != nil {
 		return m.Pipeline
 	}
@@ -229,14 +176,12 @@ func (m *SetDefaultPipelineResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_SetDefaultPipelineResponse proto.InternalMessageInfo
 
 type GetDefaultPipelineRequest struct {
-	// Type of the pipeline.
-	Type Type `protobuf:"varint,1,opt,name=type,proto3,enum=sajari.pipeline.v2.Type" json:"type,omitempty"`
-	// Identifier for the pipeline.
-	// Assumes that version is empty.
-	Pipeline             *Identifier `protobuf:"bytes,2,opt,name=pipeline,proto3" json:"pipeline,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
-	XXX_unrecognized     []byte      `json:"-"`
-	XXX_sizecache        int32       `json:"-"`
+	// Identifier for pipeline.  Assumes that the
+	// version is empty.
+	Pipeline             *TypeIdentifier `protobuf:"bytes,1,opt,name=pipeline,proto3" json:"pipeline,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
 }
 
 func (m *GetDefaultPipelineRequest) Reset()         { *m = GetDefaultPipelineRequest{} }
@@ -264,14 +209,7 @@ func (m *GetDefaultPipelineRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GetDefaultPipelineRequest proto.InternalMessageInfo
 
-func (m *GetDefaultPipelineRequest) GetType() Type {
-	if m != nil {
-		return m.Type
-	}
-	return Type_TYPE_UNSPECIFIED
-}
-
-func (m *GetDefaultPipelineRequest) GetPipeline() *Identifier {
+func (m *GetDefaultPipelineRequest) GetPipeline() *TypeIdentifier {
 	if m != nil {
 		return m.Pipeline
 	}
@@ -279,12 +217,10 @@ func (m *GetDefaultPipelineRequest) GetPipeline() *Identifier {
 }
 
 type GetDefaultPipelineResponse struct {
-	// Type of the pipeline.
-	Type Type `protobuf:"varint,1,opt,name=type,proto3,enum=sajari.pipeline.v2.Type" json:"type,omitempty"`
-	// Identifier for the current default version.
-	Pipeline *Identifier `protobuf:"bytes,2,opt,name=pipeline,proto3" json:"pipeline,omitempty"`
+	// Identifier for pipeline.
+	Pipeline *TypeIdentifier `protobuf:"bytes,1,opt,name=pipeline,proto3" json:"pipeline,omitempty"`
 	// Time when this default version was set.
-	CreateTime           *timestamp.Timestamp `protobuf:"bytes,3,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	CreateTime           *timestamp.Timestamp `protobuf:"bytes,2,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
 	XXX_unrecognized     []byte               `json:"-"`
 	XXX_sizecache        int32                `json:"-"`
@@ -315,14 +251,7 @@ func (m *GetDefaultPipelineResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GetDefaultPipelineResponse proto.InternalMessageInfo
 
-func (m *GetDefaultPipelineResponse) GetType() Type {
-	if m != nil {
-		return m.Type
-	}
-	return Type_TYPE_UNSPECIFIED
-}
-
-func (m *GetDefaultPipelineResponse) GetPipeline() *Identifier {
+func (m *GetDefaultPipelineResponse) GetPipeline() *TypeIdentifier {
 	if m != nil {
 		return m.Pipeline
 	}
@@ -337,15 +266,12 @@ func (m *GetDefaultPipelineResponse) GetCreateTime() *timestamp.Timestamp {
 }
 
 type ListPipelinesRequest struct {
-	// Type of pipelines to list.
-	Type Type `protobuf:"varint,1,opt,name=type,proto3,enum=sajari.pipeline.v2.Type" json:"type,omitempty"`
-	// Identifier to use as a query.
-	// Empty version means that only the name is used.
-	Pipeline *Identifier `protobuf:"bytes,2,opt,name=pipeline,proto3" json:"pipeline,omitempty"`
+	// Identifier query for pipeline. Name and Version can be blank.
+	Pipeline *TypeIdentifier `protobuf:"bytes,1,opt,name=pipeline,proto3" json:"pipeline,omitempty"`
 	// The maximum number of pipelines to return.
-	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// The `next_page_token` value returned from a previous List request, if any.
-	PageToken            string   `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	PageToken            string   `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -376,14 +302,7 @@ func (m *ListPipelinesRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ListPipelinesRequest proto.InternalMessageInfo
 
-func (m *ListPipelinesRequest) GetType() Type {
-	if m != nil {
-		return m.Type
-	}
-	return Type_TYPE_UNSPECIFIED
-}
-
-func (m *ListPipelinesRequest) GetPipeline() *Identifier {
+func (m *ListPipelinesRequest) GetPipeline() *TypeIdentifier {
 	if m != nil {
 		return m.Pipeline
 	}
@@ -406,7 +325,7 @@ func (m *ListPipelinesRequest) GetPageToken() string {
 
 type ListPipelinesResponse struct {
 	// The pipelines found.
-	Pipelines []*Identifier `protobuf:"bytes,1,rep,name=pipelines,proto3" json:"pipelines,omitempty"`
+	Pipelines []*Pipeline `protobuf:"bytes,1,rep,name=pipelines,proto3" json:"pipelines,omitempty"`
 	// The next page token.
 	NextPageToken        string   `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -439,7 +358,7 @@ func (m *ListPipelinesResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ListPipelinesResponse proto.InternalMessageInfo
 
-func (m *ListPipelinesResponse) GetPipelines() []*Identifier {
+func (m *ListPipelinesResponse) GetPipelines() []*Pipeline {
 	if m != nil {
 		return m.Pipelines
 	}
@@ -455,21 +374,10 @@ func (m *ListPipelinesResponse) GetNextPageToken() string {
 
 // Create a pipeline.
 type CreatePipelineRequest struct {
-	// Type of pipeline to create.
-	Type Type `protobuf:"varint,1,opt,name=type,proto3,enum=sajari.pipeline.v2.Type" json:"type,omitempty"`
-	// Pipeline identifier to create.
-	Pipeline *Identifier `protobuf:"bytes,2,opt,name=pipeline,proto3" json:"pipeline,omitempty"`
-	// Title of the pipeline.
-	Title string `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
-	// Description of the pipeline.
-	Description string `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
-	// List of steps that the pipeline will run.
-	PreSteps []*StepConfig `protobuf:"bytes,5,rep,name=pre_steps,json=preSteps,proto3" json:"pre_steps,omitempty"`
-	// List of steps that will be run after the action has been performed.
-	PostSteps            []*StepConfig `protobuf:"bytes,6,rep,name=post_steps,json=postSteps,proto3" json:"post_steps,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
-	XXX_unrecognized     []byte        `json:"-"`
-	XXX_sizecache        int32         `json:"-"`
+	Pipeline             *Pipeline `protobuf:"bytes,1,opt,name=pipeline,proto3" json:"pipeline,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
+	XXX_unrecognized     []byte    `json:"-"`
+	XXX_sizecache        int32     `json:"-"`
 }
 
 func (m *CreatePipelineRequest) Reset()         { *m = CreatePipelineRequest{} }
@@ -497,44 +405,135 @@ func (m *CreatePipelineRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_CreatePipelineRequest proto.InternalMessageInfo
 
-func (m *CreatePipelineRequest) GetType() Type {
-	if m != nil {
-		return m.Type
-	}
-	return Type_TYPE_UNSPECIFIED
-}
-
-func (m *CreatePipelineRequest) GetPipeline() *Identifier {
+func (m *CreatePipelineRequest) GetPipeline() *Pipeline {
 	if m != nil {
 		return m.Pipeline
 	}
 	return nil
 }
 
-func (m *CreatePipelineRequest) GetTitle() string {
+type Pipeline struct {
+	// Identifier for pipeline.
+	Pipeline *TypeIdentifier `protobuf:"bytes,1,opt,name=pipeline,proto3" json:"pipeline,omitempty"`
+	// Title of the pipeline.
+	Title string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	// Description of the pipeline.
+	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	// Step configurations.
+	Steps []*StepConfigs `protobuf:"bytes,4,rep,name=steps,proto3" json:"steps,omitempty"`
+	// Output only. Time when the pipeline was created.
+	CreateTime           *timestamp.Timestamp `protobuf:"bytes,5,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
+	XXX_unrecognized     []byte               `json:"-"`
+	XXX_sizecache        int32                `json:"-"`
+}
+
+func (m *Pipeline) Reset()         { *m = Pipeline{} }
+func (m *Pipeline) String() string { return proto.CompactTextString(m) }
+func (*Pipeline) ProtoMessage()    {}
+func (*Pipeline) Descriptor() ([]byte, []int) {
+	return fileDescriptor_145957d7d942a634, []int{9}
+}
+
+func (m *Pipeline) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Pipeline.Unmarshal(m, b)
+}
+func (m *Pipeline) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Pipeline.Marshal(b, m, deterministic)
+}
+func (m *Pipeline) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Pipeline.Merge(m, src)
+}
+func (m *Pipeline) XXX_Size() int {
+	return xxx_messageInfo_Pipeline.Size(m)
+}
+func (m *Pipeline) XXX_DiscardUnknown() {
+	xxx_messageInfo_Pipeline.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Pipeline proto.InternalMessageInfo
+
+func (m *Pipeline) GetPipeline() *TypeIdentifier {
+	if m != nil {
+		return m.Pipeline
+	}
+	return nil
+}
+
+func (m *Pipeline) GetTitle() string {
 	if m != nil {
 		return m.Title
 	}
 	return ""
 }
 
-func (m *CreatePipelineRequest) GetDescription() string {
+func (m *Pipeline) GetDescription() string {
 	if m != nil {
 		return m.Description
 	}
 	return ""
 }
 
-func (m *CreatePipelineRequest) GetPreSteps() []*StepConfig {
+func (m *Pipeline) GetSteps() []*StepConfigs {
 	if m != nil {
-		return m.PreSteps
+		return m.Steps
 	}
 	return nil
 }
 
-func (m *CreatePipelineRequest) GetPostSteps() []*StepConfig {
+func (m *Pipeline) GetCreateTime() *timestamp.Timestamp {
 	if m != nil {
-		return m.PostSteps
+		return m.CreateTime
+	}
+	return nil
+}
+
+// StepConfigs wraps the step types into a list.
+type StepConfigs struct {
+	// Type of step run.
+	StepType StepType `protobuf:"varint,1,opt,name=step_type,json=stepType,proto3,enum=sajari.pipeline.v2.StepType" json:"step_type,omitempty"`
+	// List of steps.
+	Steps                []*StepConfig `protobuf:"bytes,2,rep,name=steps,proto3" json:"steps,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *StepConfigs) Reset()         { *m = StepConfigs{} }
+func (m *StepConfigs) String() string { return proto.CompactTextString(m) }
+func (*StepConfigs) ProtoMessage()    {}
+func (*StepConfigs) Descriptor() ([]byte, []int) {
+	return fileDescriptor_145957d7d942a634, []int{10}
+}
+
+func (m *StepConfigs) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_StepConfigs.Unmarshal(m, b)
+}
+func (m *StepConfigs) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_StepConfigs.Marshal(b, m, deterministic)
+}
+func (m *StepConfigs) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StepConfigs.Merge(m, src)
+}
+func (m *StepConfigs) XXX_Size() int {
+	return xxx_messageInfo_StepConfigs.Size(m)
+}
+func (m *StepConfigs) XXX_DiscardUnknown() {
+	xxx_messageInfo_StepConfigs.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_StepConfigs proto.InternalMessageInfo
+
+func (m *StepConfigs) GetStepType() StepType {
+	if m != nil {
+		return m.StepType
+	}
+	return StepType_STEP_TYPE_UNSPECIFIED
+}
+
+func (m *StepConfigs) GetSteps() []*StepConfig {
+	if m != nil {
+		return m.Steps
 	}
 	return nil
 }
@@ -550,17 +549,21 @@ type StepConfig struct {
 	// Identifier -> changes to apply
 	ParameterConfigs map[string]*StepConfig_ParameterConfigs `protobuf:"bytes,4,rep,name=parameter_configs,json=parameterConfigs,proto3" json:"parameter_configs,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Identifier -> changes to apply
-	ConstantConfigs      map[string]*StepConfig_ConstantConfigs `protobuf:"bytes,5,rep,name=constant_configs,json=constantConfigs,proto3" json:"constant_configs,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	XXX_NoUnkeyedLiteral struct{}                               `json:"-"`
-	XXX_unrecognized     []byte                                 `json:"-"`
-	XXX_sizecache        int32                                  `json:"-"`
+	ConstantConfigs map[string]*StepConfig_ConstantConfigs `protobuf:"bytes,5,rep,name=constant_configs,json=constantConfigs,proto3" json:"constant_configs,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	// Condition expression to determine if this step should be run.
+	Condition string `protobuf:"bytes,6,opt,name=condition,proto3" json:"condition,omitempty"`
+	// Annotations added to the request when the step is run.
+	Annotations          []string `protobuf:"bytes,7,rep,name=annotations,proto3" json:"annotations,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
 func (m *StepConfig) Reset()         { *m = StepConfig{} }
 func (m *StepConfig) String() string { return proto.CompactTextString(m) }
 func (*StepConfig) ProtoMessage()    {}
 func (*StepConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_145957d7d942a634, []int{9}
+	return fileDescriptor_145957d7d942a634, []int{11}
 }
 
 func (m *StepConfig) XXX_Unmarshal(b []byte) error {
@@ -616,6 +619,20 @@ func (m *StepConfig) GetConstantConfigs() map[string]*StepConfig_ConstantConfigs
 	return nil
 }
 
+func (m *StepConfig) GetCondition() string {
+	if m != nil {
+		return m.Condition
+	}
+	return ""
+}
+
+func (m *StepConfig) GetAnnotations() []string {
+	if m != nil {
+		return m.Annotations
+	}
+	return nil
+}
+
 // Parameter configurations to be applied.
 type StepConfig_ParameterConfigs struct {
 	// List of parameter options.
@@ -629,7 +646,7 @@ func (m *StepConfig_ParameterConfigs) Reset()         { *m = StepConfig_Paramete
 func (m *StepConfig_ParameterConfigs) String() string { return proto.CompactTextString(m) }
 func (*StepConfig_ParameterConfigs) ProtoMessage()    {}
 func (*StepConfig_ParameterConfigs) Descriptor() ([]byte, []int) {
-	return fileDescriptor_145957d7d942a634, []int{9, 0}
+	return fileDescriptor_145957d7d942a634, []int{11, 0}
 }
 
 func (m *StepConfig_ParameterConfigs) XXX_Unmarshal(b []byte) error {
@@ -676,7 +693,7 @@ func (m *StepConfig_ParameterConfigs_ParameterConfig) String() string {
 }
 func (*StepConfig_ParameterConfigs_ParameterConfig) ProtoMessage() {}
 func (*StepConfig_ParameterConfigs_ParameterConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_145957d7d942a634, []int{9, 0, 0}
+	return fileDescriptor_145957d7d942a634, []int{11, 0, 0}
 }
 
 func (m *StepConfig_ParameterConfigs_ParameterConfig) XXX_Unmarshal(b []byte) error {
@@ -771,7 +788,7 @@ func (m *StepConfig_ConstantConfigs) Reset()         { *m = StepConfig_ConstantC
 func (m *StepConfig_ConstantConfigs) String() string { return proto.CompactTextString(m) }
 func (*StepConfig_ConstantConfigs) ProtoMessage()    {}
 func (*StepConfig_ConstantConfigs) Descriptor() ([]byte, []int) {
-	return fileDescriptor_145957d7d942a634, []int{9, 2}
+	return fileDescriptor_145957d7d942a634, []int{11, 2}
 }
 
 func (m *StepConfig_ConstantConfigs) XXX_Unmarshal(b []byte) error {
@@ -814,7 +831,7 @@ func (m *StepConfig_ConstantConfigs_ConstantConfig) Reset() {
 func (m *StepConfig_ConstantConfigs_ConstantConfig) String() string { return proto.CompactTextString(m) }
 func (*StepConfig_ConstantConfigs_ConstantConfig) ProtoMessage()    {}
 func (*StepConfig_ConstantConfigs_ConstantConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_145957d7d942a634, []int{9, 2, 0}
+	return fileDescriptor_145957d7d942a634, []int{11, 2, 0}
 }
 
 func (m *StepConfig_ConstantConfigs_ConstantConfig) XXX_Unmarshal(b []byte) error {
@@ -840,7 +857,7 @@ type isStepConfig_ConstantConfigs_ConstantConfig_Config interface {
 }
 
 type StepConfig_ConstantConfigs_ConstantConfig_SetValue struct {
-	SetValue string `protobuf:"bytes,3,opt,name=set_value,json=setValue,proto3,oneof"`
+	SetValue string `protobuf:"bytes,1,opt,name=set_value,json=setValue,proto3,oneof"`
 }
 
 func (*StepConfig_ConstantConfigs_ConstantConfig_SetValue) isStepConfig_ConstantConfigs_ConstantConfig_Config() {
@@ -877,7 +894,7 @@ func (m *CreatePipelineResponse) Reset()         { *m = CreatePipelineResponse{}
 func (m *CreatePipelineResponse) String() string { return proto.CompactTextString(m) }
 func (*CreatePipelineResponse) ProtoMessage()    {}
 func (*CreatePipelineResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_145957d7d942a634, []int{10}
+	return fileDescriptor_145957d7d942a634, []int{12}
 }
 
 func (m *CreatePipelineResponse) XXX_Unmarshal(b []byte) error {
@@ -912,7 +929,7 @@ func (m *DeletePipelineRequest) Reset()         { *m = DeletePipelineRequest{} }
 func (m *DeletePipelineRequest) String() string { return proto.CompactTextString(m) }
 func (*DeletePipelineRequest) ProtoMessage()    {}
 func (*DeletePipelineRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_145957d7d942a634, []int{11}
+	return fileDescriptor_145957d7d942a634, []int{13}
 }
 
 func (m *DeletePipelineRequest) XXX_Unmarshal(b []byte) error {
@@ -957,7 +974,7 @@ func (m *DeletePipelineResponse) Reset()         { *m = DeletePipelineResponse{}
 func (m *DeletePipelineResponse) String() string { return proto.CompactTextString(m) }
 func (*DeletePipelineResponse) ProtoMessage()    {}
 func (*DeletePipelineResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_145957d7d942a634, []int{12}
+	return fileDescriptor_145957d7d942a634, []int{14}
 }
 
 func (m *DeletePipelineResponse) XXX_Unmarshal(b []byte) error {
@@ -988,6 +1005,8 @@ func init() {
 	proto.RegisterType((*ListPipelinesRequest)(nil), "sajari.pipeline.v2.ListPipelinesRequest")
 	proto.RegisterType((*ListPipelinesResponse)(nil), "sajari.pipeline.v2.ListPipelinesResponse")
 	proto.RegisterType((*CreatePipelineRequest)(nil), "sajari.pipeline.v2.CreatePipelineRequest")
+	proto.RegisterType((*Pipeline)(nil), "sajari.pipeline.v2.Pipeline")
+	proto.RegisterType((*StepConfigs)(nil), "sajari.pipeline.v2.StepConfigs")
 	proto.RegisterType((*StepConfig)(nil), "sajari.pipeline.v2.StepConfig")
 	proto.RegisterMapType((map[string]*StepConfig_ConstantConfigs)(nil), "sajari.pipeline.v2.StepConfig.ConstantConfigsEntry")
 	proto.RegisterMapType((map[string]*StepConfig_ParameterConfigs)(nil), "sajari.pipeline.v2.StepConfig.ParameterConfigsEntry")
@@ -1003,63 +1022,67 @@ func init() {
 func init() { proto.RegisterFile("sajari/pipeline/v2/admin.proto", fileDescriptor_145957d7d942a634) }
 
 var fileDescriptor_145957d7d942a634 = []byte{
-	// 896 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x57, 0xdd, 0x6e, 0xe3, 0x44,
-	0x14, 0x5e, 0x3b, 0x4d, 0x1b, 0x9f, 0xa8, 0x49, 0x76, 0x68, 0x90, 0xf1, 0xb2, 0x25, 0xe4, 0x62,
-	0x49, 0xd1, 0xae, 0x23, 0x65, 0xb9, 0x60, 0x37, 0xac, 0x10, 0xdb, 0x56, 0x29, 0x12, 0x42, 0x95,
-	0x5b, 0x81, 0xe0, 0xa2, 0x91, 0x9b, 0x9c, 0x58, 0xa6, 0x89, 0x3d, 0x78, 0x26, 0x15, 0xa9, 0x04,
-	0x52, 0x2f, 0x78, 0x80, 0x3e, 0x04, 0x8f, 0x80, 0xc4, 0x05, 0x5c, 0xf1, 0x62, 0xc8, 0x1e, 0x3b,
-	0x89, 0x9d, 0x49, 0x9b, 0x08, 0xd4, 0x72, 0x97, 0x39, 0x3f, 0xf3, 0x7d, 0xf3, 0x9d, 0x93, 0x33,
-	0x63, 0xd8, 0x65, 0xf6, 0x0f, 0x76, 0xe0, 0x36, 0xa9, 0x4b, 0x71, 0xe8, 0x7a, 0xd8, 0xbc, 0x6c,
-	0x35, 0xed, 0xfe, 0xc8, 0xf5, 0x4c, 0x1a, 0xf8, 0xdc, 0x27, 0x44, 0xf8, 0xcd, 0xc4, 0x6f, 0x5e,
-	0xb6, 0x8c, 0x0f, 0x1c, 0xdf, 0x77, 0x86, 0xd8, 0x8c, 0x22, 0xce, 0xc7, 0x83, 0x26, 0x77, 0x47,
-	0xc8, 0xb8, 0x3d, 0xa2, 0x22, 0xc9, 0xf8, 0x50, 0xb2, 0xe9, 0x74, 0x83, 0x28, 0xa4, 0xfe, 0x0b,
-	0x90, 0x0e, 0xf2, 0xe3, 0xd8, 0x68, 0xe1, 0x8f, 0x63, 0x64, 0x9c, 0x3c, 0x87, 0x0d, 0x3e, 0xa1,
-	0xa8, 0x2b, 0x35, 0xa5, 0x51, 0x6a, 0xe9, 0xe6, 0x22, 0xb8, 0x79, 0x3a, 0xa1, 0x68, 0x45, 0x51,
-	0xe4, 0x35, 0x14, 0x12, 0x8f, 0xae, 0xd6, 0x94, 0x46, 0xb1, 0xb5, 0x2b, 0xcb, 0xf8, 0xb2, 0x8f,
-	0x1e, 0x77, 0x07, 0x2e, 0x06, 0xd6, 0x34, 0xbe, 0xfe, 0x87, 0x0a, 0xef, 0xa4, 0x08, 0x30, 0xea,
-	0x7b, 0x0c, 0xef, 0x8f, 0x01, 0x69, 0x83, 0x46, 0x03, 0xec, 0x32, 0x8e, 0x94, 0xe9, 0xb9, 0x5a,
-	0x6e, 0x59, 0xf2, 0x09, 0x47, 0xba, 0xef, 0x7b, 0x03, 0xd7, 0xb1, 0x0a, 0x34, 0xc0, 0x70, 0xc9,
-	0xc8, 0x1b, 0x00, 0xea, 0x33, 0x1e, 0x67, 0x6f, 0xac, 0x94, 0xad, 0x85, 0x19, 0x22, 0xbd, 0x0d,
-	0xc5, 0x5e, 0x80, 0x36, 0xc7, 0x6e, 0x58, 0x3a, 0x3d, 0x1f, 0x51, 0x37, 0x4c, 0x51, 0x57, 0x33,
-	0xa9, 0xab, 0x79, 0x9a, 0xd4, 0xd5, 0x02, 0x11, 0x1e, 0x1a, 0xea, 0xbf, 0x2a, 0xf0, 0xde, 0x09,
-	0xf2, 0x03, 0x1c, 0xd8, 0xe3, 0xe1, 0x03, 0x96, 0xf0, 0x7d, 0x30, 0x64, 0x34, 0x44, 0x21, 0x23,
-	0x96, 0x9d, 0xff, 0x01, 0xcb, 0xbf, 0x15, 0x30, 0x3a, 0x4b, 0x69, 0xde, 0x6b, 0xbf, 0xa5, 0x6a,
-	0x9e, 0x5b, 0xab, 0xe6, 0x7f, 0x2a, 0xb0, 0xf3, 0x95, 0xcb, 0xa6, 0xfc, 0xd9, 0xbd, 0x0b, 0x49,
-	0x9e, 0x80, 0x46, 0x6d, 0x07, 0xbb, 0xcc, 0xbd, 0x12, 0xec, 0xf3, 0x56, 0x21, 0x34, 0x9c, 0xb8,
-	0x57, 0x48, 0x9e, 0x02, 0x44, 0x4e, 0xee, 0x5f, 0xa0, 0xa7, 0x6f, 0xd4, 0x94, 0x86, 0x66, 0x45,
-	0xe1, 0xa7, 0xa1, 0xa1, 0xfe, 0x33, 0x54, 0x33, 0xec, 0x63, 0xf9, 0x3f, 0x03, 0x2d, 0x01, 0x60,
-	0xba, 0xb2, 0xfc, 0x6f, 0x34, 0xc7, 0x68, 0x96, 0x40, 0x9e, 0x41, 0xd9, 0xc3, 0x9f, 0x78, 0x77,
-	0x0e, 0x5a, 0x8d, 0xa0, 0xb7, 0x43, 0xf3, 0xf1, 0x14, 0xfe, 0x77, 0x15, 0xaa, 0xfb, 0x91, 0x98,
-	0x0f, 0xd6, 0x87, 0x64, 0x07, 0xf2, 0xdc, 0xe5, 0x43, 0x21, 0x9d, 0x66, 0x89, 0x05, 0xa9, 0x41,
-	0xb1, 0x8f, 0xac, 0x17, 0xb8, 0x94, 0xbb, 0x7e, 0x22, 0xdc, 0xbc, 0x29, 0x3d, 0xa6, 0xf2, 0xff,
-	0x6a, 0x4c, 0x6d, 0xae, 0x39, 0xa6, 0xea, 0x7f, 0x6d, 0x01, 0xcc, 0x3c, 0x64, 0x17, 0xc0, 0x9d,
-	0x1e, 0x2d, 0x92, 0x4c, 0xb3, 0xe6, 0x2c, 0xb3, 0x23, 0xaa, 0xb7, 0x1c, 0x31, 0xb7, 0x78, 0x44,
-	0x1b, 0x1e, 0x53, 0x3b, 0xb0, 0x47, 0xc8, 0x31, 0xe8, 0xf6, 0x22, 0xac, 0x64, 0xa6, 0x7e, 0x72,
-	0x3b, 0x59, 0xf3, 0x38, 0xc9, 0x13, 0x6b, 0x76, 0xe8, 0xf1, 0x60, 0x62, 0x55, 0x68, 0xc6, 0x4c,
-	0xce, 0xa0, 0xd2, 0xf3, 0x3d, 0xc6, 0x6d, 0x8f, 0x4f, 0x11, 0x84, 0x98, 0x2f, 0xef, 0x40, 0xd8,
-	0x8f, 0xd3, 0x52, 0x00, 0xe5, 0x5e, 0xda, 0x6a, 0x5c, 0xab, 0x50, 0xc9, 0x72, 0x21, 0xdf, 0xc1,
-	0x56, 0x82, 0x25, 0x5a, 0xfb, 0xf3, 0x35, 0x4f, 0x93, 0x35, 0x58, 0xc9, 0x7e, 0xc6, 0x8d, 0x02,
-	0xe5, 0x8c, 0x93, 0x3c, 0x81, 0x02, 0x43, 0xde, 0xf5, 0xec, 0x91, 0xe8, 0x67, 0xed, 0xe8, 0x91,
-	0xb5, 0xc5, 0x90, 0x7f, 0x6d, 0x8f, 0x90, 0xec, 0x41, 0x39, 0x74, 0xce, 0x57, 0x42, 0x8d, 0x63,
-	0x4a, 0x2c, 0x1c, 0x8f, 0xb3, 0x72, 0x3c, 0x87, 0xc7, 0x22, 0x34, 0x9a, 0x98, 0xdd, 0x4b, 0x7b,
-	0x38, 0x8e, 0xbb, 0xf6, 0xe8, 0x91, 0x55, 0x66, 0xd3, 0x59, 0xfa, 0x4d, 0xe8, 0x78, 0x5b, 0x80,
-	0x4d, 0x41, 0xca, 0xe0, 0x50, 0x95, 0x96, 0x83, 0x54, 0x20, 0x77, 0x81, 0x93, 0xb8, 0x61, 0xc2,
-	0x9f, 0xe4, 0x10, 0xf2, 0x62, 0x5b, 0xf1, 0x2f, 0x6a, 0xae, 0xa9, 0x8b, 0x25, 0xb2, 0x5f, 0xab,
-	0x9f, 0x2a, 0xc6, 0x6f, 0x0a, 0x94, 0x33, 0x35, 0x22, 0xdf, 0x66, 0x85, 0x7f, 0xb3, 0x5e, 0x91,
-	0x33, 0xeb, 0x99, 0xec, 0xaf, 0xa0, 0x94, 0x76, 0x91, 0xa7, 0xa0, 0x85, 0x62, 0xa5, 0x45, 0x0a,
-	0xeb, 0x90, 0x55, 0x27, 0x80, 0x1d, 0x59, 0x2b, 0x49, 0xc4, 0x39, 0x48, 0x8b, 0x63, 0xae, 0xc7,
-	0x7d, 0x4e, 0x9b, 0xba, 0x0e, 0xef, 0x66, 0xc7, 0x5e, 0x7c, 0x3b, 0x5f, 0x2b, 0x50, 0x3d, 0xc0,
-	0x21, 0x3e, 0xe0, 0x44, 0x0c, 0xd9, 0x65, 0x29, 0x08, 0x76, 0xad, 0x9b, 0x3c, 0x6c, 0x27, 0xc6,
-	0x2f, 0xc2, 0xc7, 0x30, 0x71, 0xa0, 0x94, 0x3e, 0x09, 0xd9, 0x93, 0xe1, 0x48, 0x87, 0xbc, 0xf1,
-	0xf1, 0x2a, 0xa1, 0xf1, 0x85, 0xd4, 0x87, 0xed, 0xd4, 0x4d, 0x45, 0x1a, 0xb2, 0x64, 0xd9, 0x55,
-	0x6c, 0xec, 0xad, 0x10, 0x19, 0xa3, 0x9c, 0x41, 0x71, 0xee, 0xf1, 0x4b, 0x9e, 0xc9, 0x32, 0x17,
-	0x9f, 0xe7, 0xc6, 0x47, 0x77, 0xc6, 0xc5, 0xfb, 0x33, 0x20, 0x8b, 0x4f, 0x33, 0xf2, 0x42, 0xda,
-	0x49, 0xcb, 0xde, 0x68, 0x86, 0xb9, 0x04, 0x6d, 0xd9, 0x53, 0x8a, 0x45, 0x9f, 0x14, 0x2b, 0x81,
-	0x76, 0xfe, 0x33, 0x50, 0x07, 0x4a, 0xe9, 0x26, 0x92, 0x37, 0x86, 0xb4, 0xd7, 0xe5, 0x8d, 0x21,
-	0xef, 0xc9, 0xb7, 0xed, 0xef, 0x5f, 0xf5, 0xfc, 0x3e, 0x26, 0x19, 0x3d, 0x7f, 0x24, 0xbe, 0xbf,
-	0x1c, 0xf4, 0x5e, 0x38, 0x7e, 0x73, 0xf1, 0x8b, 0xab, 0x9d, 0xfc, 0xa6, 0xe7, 0xe7, 0x9b, 0x51,
-	0xe8, 0xcb, 0x7f, 0x02, 0x00, 0x00, 0xff, 0xff, 0x78, 0x6f, 0xf6, 0x83, 0xee, 0x0d, 0x00, 0x00,
+	// 945 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x57, 0xe1, 0x6f, 0xdb, 0x44,
+	0x14, 0x9f, 0xd3, 0xa5, 0x8d, 0x5f, 0xd4, 0xa4, 0x3b, 0xda, 0xc9, 0x78, 0x5d, 0x17, 0xf2, 0x61,
+	0xb4, 0x68, 0x73, 0xa4, 0x6e, 0x48, 0x6b, 0x2b, 0x40, 0xac, 0x9d, 0x32, 0x24, 0x04, 0xc5, 0xad,
+	0x40, 0x80, 0xb4, 0xe8, 0xea, 0xbc, 0x5a, 0xc7, 0x12, 0xdb, 0xf8, 0xae, 0x15, 0x1d, 0x12, 0xd2,
+	0xfe, 0x84, 0xf1, 0x8d, 0x3f, 0x80, 0x7f, 0x91, 0x6f, 0x48, 0xe8, 0x7c, 0xb6, 0x63, 0x3b, 0xd7,
+	0x36, 0xd9, 0xc6, 0x37, 0xfb, 0xdd, 0x7b, 0xef, 0xf7, 0xbb, 0xdf, 0xfd, 0xf2, 0x7c, 0x81, 0x0d,
+	0x4e, 0x7f, 0xa1, 0x31, 0xeb, 0x45, 0x2c, 0xc2, 0x11, 0x0b, 0xb0, 0x77, 0xbe, 0xdd, 0xa3, 0xc3,
+	0x31, 0x0b, 0x9c, 0x28, 0x0e, 0x45, 0x48, 0x88, 0x5a, 0x77, 0xb2, 0x75, 0xe7, 0x7c, 0xdb, 0xbe,
+	0xe7, 0x87, 0xa1, 0x3f, 0xc2, 0x5e, 0x92, 0x71, 0x72, 0x76, 0xda, 0x13, 0x6c, 0x8c, 0x5c, 0xd0,
+	0x71, 0xa4, 0x8a, 0xec, 0x8f, 0x34, 0x4d, 0xf3, 0x06, 0x49, 0x4a, 0xf7, 0x18, 0x48, 0x1f, 0xc5,
+	0x61, 0x1a, 0x74, 0xf1, 0xd7, 0x33, 0xe4, 0x82, 0x7c, 0x0e, 0x8d, 0x2c, 0xcf, 0x32, 0x3a, 0xc6,
+	0x66, 0x73, 0xbb, 0xeb, 0x4c, 0x13, 0x70, 0x8e, 0x2f, 0x22, 0xfc, 0x6a, 0x88, 0x81, 0x60, 0xa7,
+	0x0c, 0x63, 0x37, 0xaf, 0xe9, 0x7e, 0x0b, 0x1f, 0x94, 0xba, 0xf2, 0x28, 0x0c, 0x38, 0x92, 0x27,
+	0x53, 0x6d, 0xd7, 0x75, 0x6d, 0xf3, 0xba, 0x49, 0xc3, 0x9f, 0xe1, 0xc3, 0x23, 0x14, 0x07, 0x78,
+	0x4a, 0xcf, 0x46, 0xef, 0x9d, 0xed, 0x3a, 0xd8, 0xba, 0xe6, 0x8a, 0xb4, 0x84, 0xee, 0xff, 0x6f,
+	0xd0, 0x7f, 0x19, 0x60, 0xf7, 0x2f, 0xc5, 0x7e, 0xd7, 0xf6, 0x64, 0x0f, 0x9a, 0x5e, 0x8c, 0x54,
+	0xe0, 0x40, 0x5a, 0xc3, 0xaa, 0x25, 0x2d, 0x6c, 0x47, 0xf9, 0xc6, 0xc9, 0x7c, 0xe3, 0x1c, 0x67,
+	0xbe, 0x71, 0x41, 0xa5, 0xcb, 0x40, 0xf7, 0x4f, 0x03, 0x56, 0xbf, 0x66, 0x3c, 0x67, 0xc5, 0xdf,
+	0xd3, 0xa6, 0xc9, 0x1d, 0x30, 0x23, 0xea, 0xe3, 0x80, 0xb3, 0x57, 0x8a, 0x53, 0xdd, 0x6d, 0xc8,
+	0xc0, 0x11, 0x7b, 0x85, 0xe4, 0x2e, 0x40, 0xb2, 0x28, 0xc2, 0x97, 0x18, 0x58, 0x0b, 0x1d, 0x63,
+	0xd3, 0x74, 0x93, 0xf4, 0x63, 0x19, 0xe8, 0xfe, 0x0e, 0x6b, 0x15, 0x4e, 0xa9, 0x54, 0xbb, 0x60,
+	0x66, 0x00, 0xdc, 0x32, 0x3a, 0x0b, 0xd7, 0x9a, 0x6b, 0x92, 0x4e, 0xee, 0x43, 0x3b, 0xc0, 0xdf,
+	0xc4, 0xa0, 0x00, 0x5c, 0x4b, 0x80, 0x97, 0x65, 0xf8, 0x30, 0x07, 0xff, 0x0e, 0xd6, 0xf6, 0x13,
+	0x7d, 0xaa, 0x36, 0x78, 0x7b, 0x63, 0xff, 0x63, 0x40, 0x23, 0x0b, 0xbf, 0xb3, 0xb0, 0xab, 0x50,
+	0x17, 0x4c, 0x8c, 0x30, 0x65, 0xaf, 0x5e, 0x48, 0x07, 0x9a, 0x43, 0xe4, 0x5e, 0xcc, 0x22, 0xc1,
+	0xc2, 0x4c, 0xd2, 0x62, 0x88, 0x7c, 0x0a, 0x75, 0x2e, 0x30, 0xe2, 0xd6, 0xcd, 0x44, 0xb7, 0x7b,
+	0x3a, 0xd0, 0x23, 0x81, 0xd1, 0x7e, 0x18, 0x9c, 0x32, 0x9f, 0xbb, 0x2a, 0xbb, 0xea, 0xae, 0xfa,
+	0x5c, 0xee, 0xfa, 0x03, 0x9a, 0x85, 0x96, 0x64, 0x07, 0x4c, 0xd9, 0x74, 0x20, 0x2e, 0x22, 0xb5,
+	0xf7, 0x96, 0x5e, 0x42, 0x59, 0x23, 0xf7, 0xef, 0x36, 0x78, 0xfa, 0x44, 0x1e, 0x67, 0xec, 0x6b,
+	0x09, 0xfb, 0x8d, 0xab, 0xd9, 0xa7, 0xe4, 0xbb, 0xff, 0x2e, 0x01, 0x4c, 0xa2, 0x64, 0x03, 0x80,
+	0xe5, 0x92, 0x26, 0x04, 0x4c, 0xb7, 0x10, 0x79, 0x6b, 0x69, 0x29, 0xdc, 0x8a, 0x68, 0x4c, 0xc7,
+	0x28, 0x30, 0x1e, 0x78, 0x6a, 0xb3, 0xa9, 0xcc, 0x8f, 0xaf, 0x26, 0xea, 0x1c, 0x66, 0x75, 0xa9,
+	0x46, 0xcf, 0x02, 0x11, 0x5f, 0xb8, 0x2b, 0x51, 0x25, 0x4c, 0x5e, 0xc0, 0x8a, 0x17, 0x06, 0x5c,
+	0xd0, 0x40, 0xe4, 0x08, 0xf5, 0x04, 0xe1, 0xd1, 0x35, 0x08, 0xfb, 0x69, 0x59, 0x09, 0xa0, 0xed,
+	0x95, 0xa3, 0x64, 0x1d, 0x4c, 0x2f, 0x0c, 0x86, 0x2c, 0xd9, 0xe2, 0xa2, 0xfa, 0x41, 0xe6, 0x01,
+	0x29, 0x01, 0x0d, 0x82, 0x50, 0x50, 0xf9, 0xc6, 0xad, 0xa5, 0xce, 0x82, 0x94, 0xa0, 0x10, 0xb2,
+	0x5f, 0xd7, 0x60, 0xa5, 0xba, 0x17, 0xf2, 0x23, 0x2c, 0x65, 0x5c, 0xd5, 0x8f, 0xf5, 0x8b, 0x39,
+	0xd5, 0xa8, 0x06, 0xdc, 0xac, 0x9f, 0xfd, 0xc6, 0x80, 0x76, 0x65, 0x91, 0xdc, 0x81, 0x06, 0x47,
+	0x31, 0x08, 0xe8, 0x58, 0xb9, 0xcb, 0x7c, 0x7e, 0xc3, 0x5d, 0xe2, 0x28, 0xbe, 0xa1, 0x63, 0x24,
+	0x5b, 0xd0, 0x96, 0x8b, 0xc5, 0x93, 0xac, 0xa5, 0x39, 0x2d, 0x2e, 0x87, 0xf3, 0xe4, 0x38, 0x1f,
+	0xc0, 0x2d, 0x95, 0x9a, 0xcc, 0xeb, 0xc1, 0x39, 0x1d, 0x9d, 0xa1, 0x3a, 0xf6, 0xe7, 0x37, 0xdc,
+	0x36, 0xcf, 0x27, 0xf9, 0xf7, 0x72, 0xe1, 0x69, 0x03, 0x16, 0x15, 0x29, 0x5b, 0xc0, 0x9a, 0xf6,
+	0x38, 0xc9, 0x0a, 0x2c, 0xbc, 0xc4, 0x8b, 0xd4, 0x70, 0xf2, 0x91, 0x3c, 0x83, 0xba, 0x6a, 0xab,
+	0xa6, 0x75, 0x6f, 0x4e, 0x5d, 0x5c, 0x55, 0xbd, 0x5b, 0x7b, 0x62, 0xd8, 0x7f, 0x1b, 0xd0, 0xae,
+	0x9c, 0x31, 0xf9, 0xa1, 0x2a, 0xfc, 0x67, 0xf3, 0x99, 0xa4, 0xf2, 0x3e, 0x91, 0x7d, 0x07, 0x5a,
+	0xe5, 0x25, 0x72, 0x17, 0x4c, 0x29, 0x96, 0xda, 0x4d, 0xa6, 0xba, 0x3c, 0x87, 0xaa, 0x3a, 0x31,
+	0xac, 0xea, 0xac, 0xa8, 0x11, 0xe7, 0xa0, 0x2c, 0x8e, 0x33, 0x1f, 0xf7, 0x82, 0x36, 0x5d, 0x0b,
+	0x6e, 0x57, 0x67, 0x79, 0xfa, 0xc1, 0x7f, 0x6d, 0xc0, 0xda, 0x01, 0x8e, 0x70, 0x7a, 0xcc, 0x3f,
+	0x80, 0x9b, 0x85, 0xf9, 0x64, 0x5d, 0x36, 0x9b, 0xdd, 0x24, 0x8b, 0xec, 0x16, 0xa6, 0xb9, 0xa2,
+	0xab, 0x1d, 0x4d, 0xda, 0x7b, 0x81, 0x05, 0xb7, 0xab, 0x14, 0x14, 0xbb, 0xed, 0x37, 0x75, 0x58,
+	0xce, 0x82, 0x5f, 0xca, 0x0b, 0x22, 0xf1, 0xa1, 0x55, 0xde, 0x09, 0xd9, 0xd2, 0xe1, 0x68, 0xbf,
+	0x5c, 0xf6, 0x27, 0xb3, 0xa4, 0xa6, 0x9f, 0xd8, 0x21, 0x2c, 0x97, 0xbe, 0xbd, 0x64, 0x53, 0x57,
+	0xac, 0xbb, 0x32, 0xd8, 0x5b, 0x33, 0x64, 0xa6, 0x28, 0x2f, 0xa0, 0x59, 0xb8, 0x3b, 0x92, 0xfb,
+	0xba, 0xca, 0xe9, 0x2b, 0xab, 0xfd, 0xf1, 0xb5, 0x79, 0x69, 0x7f, 0x0e, 0x64, 0xfa, 0xb6, 0x47,
+	0x1e, 0x6a, 0x9d, 0x74, 0xd9, 0xbd, 0xcf, 0x76, 0x66, 0x4d, 0x9f, 0x80, 0xf6, 0x67, 0x04, 0xed,
+	0xcf, 0x07, 0x7a, 0xc5, 0xed, 0xd1, 0x87, 0x56, 0xd9, 0x44, 0x7a, 0x63, 0x68, 0xbd, 0xae, 0x37,
+	0x86, 0xde, 0x93, 0x4f, 0xf7, 0x7e, 0xda, 0xf1, 0xc2, 0x21, 0x66, 0x15, 0x5e, 0x38, 0x56, 0xff,
+	0x49, 0x7c, 0x0c, 0x1e, 0xfa, 0x61, 0x6f, 0xfa, 0x5f, 0xc8, 0x5e, 0xf6, 0x1c, 0x9d, 0x9c, 0x2c,
+	0x26, 0xa9, 0x8f, 0xfe, 0x0b, 0x00, 0x00, 0xff, 0xff, 0x37, 0x3a, 0x22, 0xdc, 0x02, 0x0d, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1081,7 +1104,7 @@ type PipelineAdminClient interface {
 	// Get a pipeline.
 	GetPipeline(ctx context.Context, in *GetPipelineRequest, opts ...grpc.CallOption) (*GetPipelineResponse, error)
 	// Set the default version of the pipeline.
-	SetDefaultPipeline(ctx context.Context, in *SetDefaultPipelineRequest, opts ...grpc.CallOption) (*GetDefaultPipelineResponse, error)
+	SetDefaultPipeline(ctx context.Context, in *SetDefaultPipelineRequest, opts ...grpc.CallOption) (*SetDefaultPipelineResponse, error)
 	// Get the default version of the pipeline.
 	GetDefaultPipeline(ctx context.Context, in *GetDefaultPipelineRequest, opts ...grpc.CallOption) (*GetDefaultPipelineResponse, error)
 	// Delete a pipeline.
@@ -1126,8 +1149,8 @@ func (c *pipelineAdminClient) GetPipeline(ctx context.Context, in *GetPipelineRe
 	return out, nil
 }
 
-func (c *pipelineAdminClient) SetDefaultPipeline(ctx context.Context, in *SetDefaultPipelineRequest, opts ...grpc.CallOption) (*GetDefaultPipelineResponse, error) {
-	out := new(GetDefaultPipelineResponse)
+func (c *pipelineAdminClient) SetDefaultPipeline(ctx context.Context, in *SetDefaultPipelineRequest, opts ...grpc.CallOption) (*SetDefaultPipelineResponse, error) {
+	out := new(SetDefaultPipelineResponse)
 	err := c.cc.Invoke(ctx, "/sajari.pipeline.v2.PipelineAdmin/SetDefaultPipeline", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1162,7 +1185,7 @@ type PipelineAdminServer interface {
 	// Get a pipeline.
 	GetPipeline(context.Context, *GetPipelineRequest) (*GetPipelineResponse, error)
 	// Set the default version of the pipeline.
-	SetDefaultPipeline(context.Context, *SetDefaultPipelineRequest) (*GetDefaultPipelineResponse, error)
+	SetDefaultPipeline(context.Context, *SetDefaultPipelineRequest) (*SetDefaultPipelineResponse, error)
 	// Get the default version of the pipeline.
 	GetDefaultPipeline(context.Context, *GetDefaultPipelineRequest) (*GetDefaultPipelineResponse, error)
 	// Delete a pipeline.
@@ -1170,6 +1193,29 @@ type PipelineAdminServer interface {
 	// Note: it is not possible to delete a pipeline if it is the default
 	// version.
 	DeletePipeline(context.Context, *DeletePipelineRequest) (*DeletePipelineResponse, error)
+}
+
+// UnimplementedPipelineAdminServer can be embedded to have forward compatible implementations.
+type UnimplementedPipelineAdminServer struct {
+}
+
+func (*UnimplementedPipelineAdminServer) CreatePipeline(ctx context.Context, req *CreatePipelineRequest) (*CreatePipelineResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreatePipeline not implemented")
+}
+func (*UnimplementedPipelineAdminServer) ListPipelines(ctx context.Context, req *ListPipelinesRequest) (*ListPipelinesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListPipelines not implemented")
+}
+func (*UnimplementedPipelineAdminServer) GetPipeline(ctx context.Context, req *GetPipelineRequest) (*GetPipelineResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPipeline not implemented")
+}
+func (*UnimplementedPipelineAdminServer) SetDefaultPipeline(ctx context.Context, req *SetDefaultPipelineRequest) (*SetDefaultPipelineResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetDefaultPipeline not implemented")
+}
+func (*UnimplementedPipelineAdminServer) GetDefaultPipeline(ctx context.Context, req *GetDefaultPipelineRequest) (*GetDefaultPipelineResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDefaultPipeline not implemented")
+}
+func (*UnimplementedPipelineAdminServer) DeletePipeline(ctx context.Context, req *DeletePipelineRequest) (*DeletePipelineResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeletePipeline not implemented")
 }
 
 func RegisterPipelineAdminServer(s *grpc.Server, srv PipelineAdminServer) {

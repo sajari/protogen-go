@@ -9,6 +9,8 @@ import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -415,6 +417,23 @@ type TrainingSetServer interface {
 	Info(context.Context, *InfoRequest) (*InfoResponse, error)
 	// Adds a new class to the training set
 	AddClass(context.Context, *AddClassRequest) (*rpc.Empty, error)
+}
+
+// UnimplementedTrainingSetServer can be embedded to have forward compatible implementations.
+type UnimplementedTrainingSetServer struct {
+}
+
+func (*UnimplementedTrainingSetServer) Upload(ctx context.Context, req *UploadRequest) (*UploadResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Upload not implemented")
+}
+func (*UnimplementedTrainingSetServer) Create(ctx context.Context, req *CreateRequest) (*rpc.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+}
+func (*UnimplementedTrainingSetServer) Info(ctx context.Context, req *InfoRequest) (*InfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Info not implemented")
+}
+func (*UnimplementedTrainingSetServer) AddClass(ctx context.Context, req *AddClassRequest) (*rpc.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddClass not implemented")
 }
 
 func RegisterTrainingSetServer(s *grpc.Server, srv TrainingSetServer) {

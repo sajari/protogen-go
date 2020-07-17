@@ -8,6 +8,8 @@ import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -272,6 +274,14 @@ type TrainServer interface {
 	// the set of testing documents. See TrainingSet for details on how
 	// to create a training set.
 	Train(context.Context, *Request) (*Response, error)
+}
+
+// UnimplementedTrainServer can be embedded to have forward compatible implementations.
+type UnimplementedTrainServer struct {
+}
+
+func (*UnimplementedTrainServer) Train(ctx context.Context, req *Request) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Train not implemented")
 }
 
 func RegisterTrainServer(s *grpc.Server, srv TrainServer) {

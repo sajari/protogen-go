@@ -8,6 +8,8 @@ import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -772,6 +774,20 @@ type SchemaServer interface {
 	CreateField(context.Context, *CreateFieldRequest) (*CreateFieldResponse, error)
 	// MutateField mutates a field in the schema.
 	MutateField(context.Context, *MutateFieldRequest) (*MutateFieldResponse, error)
+}
+
+// UnimplementedSchemaServer can be embedded to have forward compatible implementations.
+type UnimplementedSchemaServer struct {
+}
+
+func (*UnimplementedSchemaServer) ListFields(ctx context.Context, req *ListFieldsRequest) (*ListFieldsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListFields not implemented")
+}
+func (*UnimplementedSchemaServer) CreateField(ctx context.Context, req *CreateFieldRequest) (*CreateFieldResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateField not implemented")
+}
+func (*UnimplementedSchemaServer) MutateField(ctx context.Context, req *MutateFieldRequest) (*MutateFieldResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MutateField not implemented")
 }
 
 func RegisterSchemaServer(s *grpc.Server, srv SchemaServer) {

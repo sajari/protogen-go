@@ -9,6 +9,8 @@ import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -138,6 +140,17 @@ type EngineServer interface {
 	// Deletes all resources associated with this collection. Collections must first
 	// be unloaded before they can be deleted.
 	DeleteCollection(context.Context, *Collection) (*rpc.Empty, error)
+}
+
+// UnimplementedEngineServer can be embedded to have forward compatible implementations.
+type UnimplementedEngineServer struct {
+}
+
+func (*UnimplementedEngineServer) CreateCollection(ctx context.Context, req *Collection) (*rpc.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCollection not implemented")
+}
+func (*UnimplementedEngineServer) DeleteCollection(ctx context.Context, req *Collection) (*rpc.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteCollection not implemented")
 }
 
 func RegisterEngineServer(s *grpc.Server, srv EngineServer) {

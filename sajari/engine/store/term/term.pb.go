@@ -8,6 +8,8 @@ import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -281,6 +283,14 @@ type TermServer interface {
 	// Get the term with specified values.  Ignores any values which don't
 	// have an associated term.
 	Get(context.Context, *Values) (*Infos, error)
+}
+
+// UnimplementedTermServer can be embedded to have forward compatible implementations.
+type UnimplementedTermServer struct {
+}
+
+func (*UnimplementedTermServer) Get(ctx context.Context, req *Values) (*Infos, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
 
 func RegisterTermServer(s *grpc.Server, srv TermServer) {
