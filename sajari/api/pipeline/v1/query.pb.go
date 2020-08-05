@@ -267,7 +267,9 @@ func init() {
 	proto.RegisterMapType((map[string]string)(nil), "sajari.api.pipeline.v1.EvaluateResponse.ValuesEntry")
 }
 
-func init() { proto.RegisterFile("sajari/api/pipeline/v1/query.proto", fileDescriptor_b1e834e5a8b9e4b9) }
+func init() {
+	proto.RegisterFile("sajari/api/pipeline/v1/query.proto", fileDescriptor_b1e834e5a8b9e4b9)
+}
 
 var fileDescriptor_b1e834e5a8b9e4b9 = []byte{
 	// 493 bytes of a gzipped FileDescriptorProto

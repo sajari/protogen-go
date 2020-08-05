@@ -430,7 +430,9 @@ func init() {
 	proto.RegisterType((*Step)(nil), "sajari.api.pipeline.v1.Step")
 }
 
-func init() { proto.RegisterFile("sajari/api/pipeline/v1/usage.proto", fileDescriptor_a8be2cc1f747f555) }
+func init() {
+	proto.RegisterFile("sajari/api/pipeline/v1/usage.proto", fileDescriptor_a8be2cc1f747f555)
+}
 
 var fileDescriptor_a8be2cc1f747f555 = []byte{
 	// 416 bytes of a gzipped FileDescriptorProto

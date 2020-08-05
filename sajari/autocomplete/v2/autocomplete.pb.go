@@ -769,7 +769,8 @@ type AutoCompleteRequest_AutoCompleteOption_Scorer struct {
 func (*AutoCompleteRequest_AutoCompleteOption_SkipOption) isAutoCompleteRequest_AutoCompleteOption_Opt() {
 }
 
-func (*AutoCompleteRequest_AutoCompleteOption_Scorer) isAutoCompleteRequest_AutoCompleteOption_Opt() {}
+func (*AutoCompleteRequest_AutoCompleteOption_Scorer) isAutoCompleteRequest_AutoCompleteOption_Opt() {
+}
 
 func (m *AutoCompleteRequest_AutoCompleteOption) GetOpt() isAutoCompleteRequest_AutoCompleteOption_Opt {
 	if m != nil {
@@ -1648,8 +1649,10 @@ type SuggestSpellingsRequest_ScoreOption_Clear struct {
 func (m *SuggestSpellingsRequest_ScoreOption_Clear) Reset() {
 	*m = SuggestSpellingsRequest_ScoreOption_Clear{}
 }
-func (m *SuggestSpellingsRequest_ScoreOption_Clear) String() string { return proto.CompactTextString(m) }
-func (*SuggestSpellingsRequest_ScoreOption_Clear) ProtoMessage()    {}
+func (m *SuggestSpellingsRequest_ScoreOption_Clear) String() string {
+	return proto.CompactTextString(m)
+}
+func (*SuggestSpellingsRequest_ScoreOption_Clear) ProtoMessage() {}
 func (*SuggestSpellingsRequest_ScoreOption_Clear) Descriptor() ([]byte, []int) {
 	return fileDescriptor_05ab5ed88aab76f7, []int{11, 1, 8}
 }
@@ -1825,8 +1828,10 @@ type SuggestSpellingsResponse_PhraseSuggestion struct {
 func (m *SuggestSpellingsResponse_PhraseSuggestion) Reset() {
 	*m = SuggestSpellingsResponse_PhraseSuggestion{}
 }
-func (m *SuggestSpellingsResponse_PhraseSuggestion) String() string { return proto.CompactTextString(m) }
-func (*SuggestSpellingsResponse_PhraseSuggestion) ProtoMessage()    {}
+func (m *SuggestSpellingsResponse_PhraseSuggestion) String() string {
+	return proto.CompactTextString(m)
+}
+func (*SuggestSpellingsResponse_PhraseSuggestion) ProtoMessage() {}
 func (*SuggestSpellingsResponse_PhraseSuggestion) Descriptor() ([]byte, []int) {
 	return fileDescriptor_05ab5ed88aab76f7, []int{12, 1}
 }

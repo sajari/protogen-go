@@ -3696,7 +3696,9 @@ func init() {
 	proto.RegisterType((*AnalyseResponse_Terms)(nil), "sajari.engine.query.v1.AnalyseResponse.Terms")
 }
 
-func init() { proto.RegisterFile("sajari/engine/query/v1/query.proto", fileDescriptor_e58578710fd465a6) }
+func init() {
+	proto.RegisterFile("sajari/engine/query/v1/query.proto", fileDescriptor_e58578710fd465a6)
+}
 
 var fileDescriptor_e58578710fd465a6 = []byte{
 	// 2967 bytes of a gzipped FileDescriptorProto

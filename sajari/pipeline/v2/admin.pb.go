@@ -828,8 +828,10 @@ type StepConfig_ConstantConfigs_ConstantConfig struct {
 func (m *StepConfig_ConstantConfigs_ConstantConfig) Reset() {
 	*m = StepConfig_ConstantConfigs_ConstantConfig{}
 }
-func (m *StepConfig_ConstantConfigs_ConstantConfig) String() string { return proto.CompactTextString(m) }
-func (*StepConfig_ConstantConfigs_ConstantConfig) ProtoMessage()    {}
+func (m *StepConfig_ConstantConfigs_ConstantConfig) String() string {
+	return proto.CompactTextString(m)
+}
+func (*StepConfig_ConstantConfigs_ConstantConfig) ProtoMessage() {}
 func (*StepConfig_ConstantConfigs_ConstantConfig) Descriptor() ([]byte, []int) {
 	return fileDescriptor_145957d7d942a634, []int{11, 2, 0}
 }
